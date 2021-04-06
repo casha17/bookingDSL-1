@@ -10,7 +10,7 @@ class CsprojGenerator {
 	{
 		var systemName = resource.allContents.toList.filter(System).get(0).getName();
 		
-		fsa.generateFile('''«systemName»/«systemName».csproj''', 
+		fsa.generateFile('''«systemName»/«systemName»/«systemName».csproj''', 
 			'''
 			<Project Sdk="Microsoft.NET.Sdk.Web">
 			

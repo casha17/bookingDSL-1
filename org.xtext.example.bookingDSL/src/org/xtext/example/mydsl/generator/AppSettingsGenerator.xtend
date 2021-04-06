@@ -10,7 +10,7 @@ class AppSettingsGenerator {
 	){
 		var systemName = resource.allContents.toList.filter(System).get(0).getName();
 		
-		fsa.generateFile('''«systemName»/appsettings.json''', 
+		fsa.generateFile('''«systemName»/«systemName»/appsettings.json''', 
 			'''
 			{
 			  "Logging": {
@@ -30,7 +30,7 @@ class AppSettingsGenerator {
 			}
 			''')
 			
-		fsa.generateFile('''«systemName»/appsettings.Development.json''',
+		fsa.generateFile('''«systemName»/«systemName»/appsettings.Development.json''',
 			'''
 			{
 			  "Logging": {

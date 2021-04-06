@@ -29,5 +29,19 @@ class AppSettingsGenerator {
 			"AllowedHosts": "*"
 			}
 			''')
+			
+		fsa.generateFile('''«systemName»/appsettings.Development.json''',
+			'''
+			{
+			  "Logging": {
+			    "LogLevel": {
+			      "Default": "Information",
+			      "Microsoft": "Warning",
+			      "Microsoft.Hosting.Lifetime": "Information"
+			    }
+			  }
+			}
+			'''
+		)
 	}
 }

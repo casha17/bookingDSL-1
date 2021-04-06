@@ -7,6 +7,8 @@ import org.xtext.example.mydsl.bookingDSL.*;
 import org.xtext.example.mydsl.generator.requestmodels.UserRequestModelGenerator
 import org.xtext.example.mydsl.generator.persistence.ModelsGenerator
 import org.xtext.example.mydsl.generator.persistence.RepositoriesGenerator
+import org.xtext.example.mydsl.generator.controllers.ControllerGenerator
+import org.xtext.example.mydsl.generator.handlers.HandlersGenerator
 
 class ProjectGenerator {
 	
@@ -48,6 +50,8 @@ class ProjectGenerator {
 		LaunchSettingsGenerator.generateLaunchSettingsFile(this.fsa, this.resource)
 		ModelsGenerator.generateModels(this.fsa, this.resource)
 		RepositoriesGenerator.generateRepositories(this.fsa, this.resource)
+		ControllerGenerator.generateControllers(this.fsa, this.resource)
+		HandlersGenerator.generateHandlers(this.fsa, this.resource)
 	}
 	
 	 	

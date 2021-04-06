@@ -9,6 +9,7 @@ class HandlersGenerator {
 		Resource resource)
 	{
 		var systemName = resource.allContents.toList.filter(System).get(0).getName();
+		genUserHandler(fsa, resource, systemName)
 		
 	}
 	

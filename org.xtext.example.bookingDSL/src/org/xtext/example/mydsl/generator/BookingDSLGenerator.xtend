@@ -21,7 +21,6 @@ class BookingDSLGenerator extends AbstractGenerator {
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		
 		var system = resource.allContents.toList.filter(System).get(0);
-		var customer = resource.allContents.toList.filter(Customer).get(0);
 		
 		pg = new ProjectGenerator(fsa, resource);
 		pg.generateProject();	

@@ -33,7 +33,8 @@ class ProjectGenerator {
 		this.fsa.generateFile('''«this.projRoot»/«this.systemName».csproj''', '')
 		
 		
-		this.clientAppGenerator.generate();
+		//this.clientAppGenerator.generate();
+		DockerComposeGenerator.generateComposeFile(this.fsa, this.resource)
 	}
 	
 	 	

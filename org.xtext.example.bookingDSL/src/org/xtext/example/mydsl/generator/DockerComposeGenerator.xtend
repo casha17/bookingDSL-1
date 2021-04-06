@@ -11,7 +11,7 @@ class DockerComposeGenerator{
 	{
 		var systemName = resource.allContents.toList.filter(System).get(0).getName();
 		
-		fsa.generateFile('''«systemName»/docker-compose.yml''', 
+		fsa.generateFile('''«systemName»/«systemName»/Startup.cs''', 
 			'''
 			version: '3.7'
 			services:

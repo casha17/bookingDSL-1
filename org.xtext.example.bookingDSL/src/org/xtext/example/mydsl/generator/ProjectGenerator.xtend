@@ -39,6 +39,8 @@ class ProjectGenerator {
 		CsprojGenerator.generateCSProjFile(this.fsa, this.resource)
 		GitIgnoreGenerator.generateGitIgnoreFile(this.fsa, this.resource)
 		ConfigurationGenerator.generateConfigurationFile(this.fsa, this.resource)
+		StartupGenerator.generateStartupFile(this.fsa, this.resource)
+		ProgramFileGenerator.generateProgramFile(this.fsa, this.resource)
 	}
 	
 	 	

@@ -12,3 +12,4 @@ org.xtext.example.bookingDSL.ui.tests/test-bin
 org.xtext.example.bookingDSL.tests/test-bin
 org.xtext.example.bookingDSL.ui.tests/test-bin/org/xtext/example/mydsl/ui/tests/BookingDSLUiInjectorProvider.class
 *test-bin
+*.test-bin

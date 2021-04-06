@@ -34,12 +34,8 @@ class ProjectGenerator {
 	
 	 	
 	def void generateProject() {
-		
-		this.fsa.generateFile('''«this.slnRoot»/«this.systemName».sln''', '')
-		this.fsa.generateFile('''«this.projRoot»/«this.systemName».csproj''', '')
-		
-		
-		//this.clientAppGenerator.generate();
+		generateSLN()
+		this.clientAppGenerator.generate()
 		DockerComposeGenerator.generateComposeFile(this.fsa, this.resource)
 		AppSettingsGenerator.generateAppSettings(this.fsa, this.resource)
 		CsprojGenerator.generateCSProjFile(this.fsa, this.resource)
@@ -57,21 +53,26 @@ class ProjectGenerator {
 	
 	 	
 	 	
-	/*def void generateStartup() {
-		this.fsa.generateFile('src/Startup.cs', '''
-		using System;
-		class Startup {
-			static public void Main(string[] args)  {
-				Console.Writeline("Hi from xtext");		
-				}
-		}
-		
-		''')
-	 	
+	private def void generateSLN(){
+		this.fsa.generateFile('''«this.slnRoot»/«this.systemName».sln''',
+			'''
+			Microsoft Visual Studio Solution File, Format Version 12.00
+			Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "«this.systemName»", "«this.systemName»\«this.systemName».csproj", "{EAB93814-2186-4066-92D6-465196A4DFA5}"
+			EndProject
+			Global
+				GlobalSection(SolutionConfigurationPlatforms) = preSolution
+					Debug|Any CPU = Debug|Any CPU
+					Release|Any CPU = Release|Any CPU
+				EndGlobalSection
+				GlobalSection(ProjectConfigurationPlatforms) = postSolution
+					{EAB93814-2186-4066-92D6-465196A4DFA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+					{EAB93814-2186-4066-92D6-465196A4DFA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+					{EAB93814-2186-4066-92D6-465196A4DFA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+					{EAB93814-2186-4066-92D6-465196A4DFA5}.Release|Any CPU.Build.0 = Release|Any CPU
+				EndGlobalSection
+			EndGlobal
+			'''
+		)
 	}
-	
-	def void generateProgram() {
-		this.fsa.generateFile('Program.cs', 'People to greet: ')
-	} */
 	
 }

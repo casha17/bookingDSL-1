@@ -28,6 +28,7 @@ class ProjectGenerator {
 		this.systemName = system.getName();
 		this.slnRoot = '''«systemName»/'''
 		this.projRoot = '''«this.slnRoot»/«systemName»'''
+		this.clientAppGenerator = new ClientAppGenerator(fsa, resource, this.projRoot);
 	}
 	
 	

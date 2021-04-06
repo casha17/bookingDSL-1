@@ -38,6 +38,7 @@ class ProjectGenerator {
 		AppSettingsGenerator.generateAppSettings(this.fsa, this.resource)
 		CsprojGenerator.generateCSProjFile(this.fsa, this.resource)
 		GitIgnoreGenerator.generateGitIgnoreFile(this.fsa, this.resource)
+		ConfigurationGenerator.generateConfigurationFile(this.fsa, this.resource)
 	}
 	
 	 	

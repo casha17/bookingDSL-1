@@ -3,6 +3,7 @@
 	<name>org.xtext.example.bookingDSL.ide</name>
 	<comment></comment>
 	<projects>
+		<project>bookingDSL</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

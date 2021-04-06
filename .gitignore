@@ -9,3 +9,6 @@ org.xtext.example.bookingDSL.tests/src/org/xtext/example/mydsl/tests/BookingDSLP
 org.xtext.example.bookingDSL.tests/test-bin
 org.xtext.example.bookingDSL.tests/test-bin
 org.xtext.example.bookingDSL.ui.tests/test-bin
+org.xtext.example.bookingDSL.tests/test-bin
+org.xtext.example.bookingDSL.ui.tests/test-bin/org/xtext/example/mydsl/ui/tests/BookingDSLUiInjectorProvider.class
+*test-bin

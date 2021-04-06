@@ -7,6 +7,8 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
+import org.xtext.example.mydsl.bookingDSL.*;
+
 
 /**
  * Generates code from your model files on save.
@@ -14,10 +16,14 @@ import org.eclipse.xtext.generator.IGeneratorContext
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 class BookingDSLGenerator extends AbstractGenerator {
-	private ProjectGenerator pg = new ProjectGenerator();
+	private ProjectGenerator pg;
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-				pg.startGeneration(fsa);		
+		
+		var system = resource.allContents.toList.filter(System).get(0);
+		var customer = resource.allContents.toList.filter(Customer).get(0);
+		
+		pg = new ProjectGenerator(fsa, resource);
+		pg.generateProject();	
 	}
-	
 }

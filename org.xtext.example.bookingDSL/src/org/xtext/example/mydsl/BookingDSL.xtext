@@ -2,8 +2,23 @@ grammar org.xtext.example.mydsl.BookingDSL with org.eclipse.xtext.common.Termina
 
 generate bookingDSL "http://www.xtext.org/example/mydsl/BookingDSL"
 
-Model:
-	greetings+=Greeting*;
-	
-Greeting:
-	'Hello' name=ID '!';
+
+System:
+	'system' name=ID (baseDeclaration+=BaseDeclaration)*
+;
+
+BaseDeclaration:
+	Declaration | External
+;
+
+External:
+	'external' name=ID
+;
+
+Declaration:
+	Customer
+;
+
+Customer:
+	'customer' name=ID
+;

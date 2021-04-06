@@ -5,3 +5,5 @@ xtend-gen
 .metadata
 bin
 generated
+org.xtext.example.bookingDSL.tests/src/org/xtext/example/mydsl/tests/BookingDSLParsingTest.xtend
+org.xtext.example.bookingDSL.tests/test-bin

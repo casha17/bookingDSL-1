@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.xtext.example.bookingDSL.ide
+Bundle-ManifestVersion: 2
+Bundle-Name: org.xtext.example.bookingDSL.ide
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: org.xtext.example.bookingDSL.ide; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.xtext.example.bookingDSL,
+ org.eclipse.xtext.ide,
+ org.eclipse.xtext.xbase.ide
+Bundle-RequiredExecutionEnvironment: JavaSE-11

@@ -13,8 +13,6 @@ generate bookingDSL "http://www.xtext.org/example/mydsl/BookingDSL"
  * 
  */
 
-
-
 // system keyword followed by identifier within curly braces we can have 0-n baseDeclarations
 System:
 	'system' name=ID '{'
@@ -74,7 +72,7 @@ Booking:
 ;
 
 Member:
-	Attribute | Relation 
+	Attribute | Relation | Constraint
 ;
 
 // Attributes are declared name first, then type and optionally that type can be an array.
@@ -88,7 +86,7 @@ Relation:
 	'has' ('many' | 'one') relationType=[Declaration]
 ;
 
-/* 
+
 Constraint:
 	'constraint' '(' Logic ')'
 ;
@@ -112,7 +110,7 @@ Conjunction:
 
 // 
 PrimitiveLogic:
-	ExternalCall | Comparison | '(' logic=Logic ')'
+	ExternalCall | Comparison | '[' logic=Logic ']'
 ;
 
 ExternalCall:
@@ -149,5 +147,4 @@ Number:
 	value=INT
 ;
 
-*/
 

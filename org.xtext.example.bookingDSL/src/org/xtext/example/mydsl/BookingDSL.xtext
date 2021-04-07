@@ -3,22 +3,151 @@ grammar org.xtext.example.mydsl.BookingDSL with org.eclipse.xtext.common.Termina
 generate bookingDSL "http://www.xtext.org/example/mydsl/BookingDSL"
 
 
+// CHEAT CODES
+/*
+ * 1. type=[Entity] ??
+ * In xText if you place two square brackets with a type inside such as superType=[Customer], then this means that
+ * the variable superType can't just be a name, but the name of an existing object of type Customer.
+ * 
+ * 
+ * 
+ */
+
+
+
+// system keyword followed by identifier within curly braces we can have 0-n baseDeclarations
 System:
-	'system' name=ID (baseDeclaration+=BaseDeclaration)*
+	'system' name=ID '{'
+		baseDeclaration += BaseDeclaration*
+	'}'
 ;
 
 BaseDeclaration:
 	Declaration | External
 ;
 
+// external keyword followed by identifier, parenthesis must follow with at least on argument referring to another identifier
+// 0 to multiple arguments can follow separated from each other by ","
 External:
-	'external' name=ID
+	'external' name=ID '(' parameters+=ID (',' parameters+=ID)* ')'
 ;
 
 Declaration:
-	Customer
+	Customer | Resource | Entity | Schedule | Booking
 ;
 
+// customer keyword with identifier, extends is optional and most extend a customer type
+// within scope there can be one or more members
 Customer:
-	'customer' name=ID
+	'customer' name=ID ('extends' superType=[Customer])? '{'
+		members += Member*
+	'}'
 ;
+
+// resource keyword with identifier, extends is optional and most extend a resource type
+// within scope there can be one or more members
+Resource:
+	'resource' name=ID ('extends' superType=[Resource])? '{'
+		members += Member*
+	'}'
+;
+
+// entity keyword with identifier, within scope there can be one or more members
+Entity:
+	'entity' name=ID '{'
+		members += Member*
+	'}'
+;
+
+// schedule keyword with identifier, within scope there can be one or more members
+Schedule:
+	'schedule' name=ID '{'
+		members += Member*
+	'}'
+;
+
+// booking keyword with identifier, within scope there can be one or more members
+Booking:
+	'booking' name=ID '{'
+		members += Member*
+	'}'
+;
+
+Member:
+	Attribute | Relation 
+;
+
+// Attributes are declared name first, then type and optionally that type can be an array.
+Attribute:
+	name=ID ':' ('int' | 'string' | 'bool' | 'float') (array ?='[' (length=INT)? ']')?
+;
+
+// A relation is defined with has, the multiplicity of the relation then defined with many or one, the
+// relation must point towards an existing named declaration
+Relation:
+	'has' ('many' | 'one') relationType=[Declaration]
+;
+
+/* 
+Constraint:
+	'constraint' '(' Logic ')'
+;
+
+
+// The top level of an expression 
+Logic:
+	Disjunction
+;
+
+// Logical disjunction is the classical name for an "or" operation
+Disjunction:
+	left=Conjunction ('or' right=Conjunction)?
+;
+
+// Logical conjunction is the classical name for an "and" operation
+Conjunction:
+	left=PrimitiveLogic ('and' right=PrimitiveLogic)?
+;
+
+
+// 
+PrimitiveLogic:
+	ExternalCall | Comparison | '(' logic=Logic ')'
+;
+
+ExternalCall:
+	target=[External] '(' arguments+=Expression (','arguments+=Expression)* ')'
+;
+
+Comparison:
+	left=Expression operator=CompareOperator right=Expression
+;
+
+CompareOperator:
+	'<' | '>' | '==' | '<=' | '>='
+;
+
+
+Expression:
+	Factor (('+' {Plus.left=current} | '-' {Minus.left=current}) right=Factor)*
+;
+
+
+Factor:
+	PrimitiveExpression (('*' {Mult.left=current} | '/' {Div.left=current}) right=PrimitiveExpression)
+;
+
+PrimitiveExpression:
+	Var | Number | '(' exp=Expression ')'
+;
+
+Var:
+	name=[Attribute]
+;
+
+Number:
+	value=INT
+;
+
+*/
+

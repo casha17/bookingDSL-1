@@ -77,7 +77,7 @@ Member:
 
 // Attributes are declared name first, then type and optionally that type can be an array.
 Attribute:
-	name=ID ':' type+=Type* (array ?='[' (length=INT)? ']')?
+	name=ID ':' type=Type (array ?='[' (length=INT)? ']')?
 ;
 
 enum Type: 

@@ -12,6 +12,7 @@ class SrcGenerator {
 	private APIGenerator apiGenerator;
 	private ComponentsGenerator componentsGenerator;
 	private PagesGenerator pagesGenerator;
+	private ModelGenerator modelGenerator;
 	
 	new(IFileSystemAccess2 fsa, Resource resource, String clientRoot) {
 		this.fsa = fsa;
@@ -21,6 +22,7 @@ class SrcGenerator {
 		this.apiGenerator = new APIGenerator(fsa, resource, this.srcRoot);
 		this.componentsGenerator = new ComponentsGenerator(fsa, resource, this.srcRoot);
 		this.pagesGenerator = new PagesGenerator(fsa, resource, this.srcRoot);
+		this.modelGenerator = new ModelGenerator(fsa, resource , this.srcRoot);
 	}
 	
 	def generate() {
@@ -30,6 +32,9 @@ class SrcGenerator {
 		this.apiGenerator.generate();
 		this.componentsGenerator.generate();
 		this.pagesGenerator.generate();
+		
+		// Added models
+		this.modelGenerator.generate();
 	}
 	
 	

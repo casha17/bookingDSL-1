@@ -78,7 +78,14 @@ Member:
 
 // Attributes are declared name first, then type and optionally that type can be an array.
 Attribute:
-	name=ID ':' ('int' | 'string' | 'bool' | 'float') (array ?='[' (length=INT)? ']')?
+	name=ID ':' type=Type (array ?='[' (length=INT)? ']')?
+;
+
+enum Type: 
+	int='int'
+	| string='string'
+	| bool='bool'
+	| float='float'
 ;
 
 // A relation is defined with has, the multiplicity of the relation then defined with many or one, the

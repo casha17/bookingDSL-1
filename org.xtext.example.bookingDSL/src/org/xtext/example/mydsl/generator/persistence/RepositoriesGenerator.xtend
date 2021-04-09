@@ -52,7 +52,7 @@ class RepositoriesGenerator {
 				    {
 				    }
 				    
-				    public class «name»Repository : BaseRepository<User>, I«name»Repository
+				    public class «name»Repository : BaseRepository<«name»>, I«name»Repository
 				    {
 				        public «name»Repository(IMongoClient client, IOptions<PersistenceConfiguration> config) : base(client, config)
 				        {

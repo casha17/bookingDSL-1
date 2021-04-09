@@ -54,7 +54,6 @@ class StartupGenerator{
 			            services.AddSingleton<IMongoClient>(ctx => new MongoClient(ctx.GetService<IOptions<PersistenceConfiguration>>().Value.MongoClusterConnectionString));
 			            
 			            // Register handlers
-			            services.AddScoped<IUserHandler, UserHandler>();
 						«FOR element : definedCustomerTypes»
 						services.AddScoped<I«element.name»Handler, «element.name»Handler>();
 						«ENDFOR»
@@ -72,7 +71,6 @@ class StartupGenerator{
 						«ENDFOR»
 			
 			            // Register repositories
-			            services.AddScoped<IUserRepository, UserRepository>();
 			            «FOR element : definedCustomerTypes»
 			            services.AddScoped<I«element.name»Repository, «element.name»Repository>();
 			            «ENDFOR»

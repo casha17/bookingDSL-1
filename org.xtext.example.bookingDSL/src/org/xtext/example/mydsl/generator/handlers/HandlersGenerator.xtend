@@ -50,7 +50,7 @@ class HandlersGenerator {
 			    {
 			        private readonly I«name»Repository _«name»Repository;
 			
-			        public UserHandler(I«name»Repository «name»Repository)
+			        public «name»Handler(I«name»Repository «name»Repository)
 			        {
 			            _«name»Repository = «name»Repository;
 			        }

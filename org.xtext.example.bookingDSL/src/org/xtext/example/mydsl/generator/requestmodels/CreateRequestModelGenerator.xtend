@@ -34,7 +34,7 @@ class CreateRequestModelGenerator {
 	
 	private static def void genFile(IFileSystemAccess2 fsa,
 		Resource resource, String systemName, String name){
-	fsa.generateFile('''«systemName»/«systemName»/RequestModels/CreateUserRequestModels.cs''', 
+	fsa.generateFile('''«systemName»/«systemName»/RequestModels/Create«name»RequestModels.cs''', 
 	'''
 	namespace «systemName».RequestModels
 	{

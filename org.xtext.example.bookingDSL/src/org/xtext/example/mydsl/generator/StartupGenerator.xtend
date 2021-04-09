@@ -10,6 +10,11 @@ class StartupGenerator{
 		Resource resource)
 	{
 		var systemName = resource.allContents.toList.filter(System).get(0).getName();
+		var definedCustomerTypes = resource.allContents.toList.filter(Customer);
+		var definedResourceTypes = resource.allContents.toList.filter(org.xtext.example.mydsl.bookingDSL.Resource);
+		var definedEntityTypes = resource.allContents.toList.filter(Entity);
+		var definedScheduleTypes = resource.allContents.toList.filter(Schedule);
+		var definedBookingTypes = resource.allContents.toList.filter(Booking);
 		
 		fsa.generateFile('''«systemName»/«systemName»/Startup.cs''', 
 			'''
@@ -50,10 +55,39 @@ class StartupGenerator{
 			            
 			            // Register handlers
 			            services.AddScoped<IUserHandler, UserHandler>();
+						«FOR element : definedCustomerTypes»
+						services.AddScoped<I«element.name»Handler, «element.name»Handler>();
+						«ENDFOR»
+						«FOR element : definedResourceTypes»
+						services.AddScoped<I«element.name»Handler, «element.name»Handler>();
+						«ENDFOR»
+						«FOR element : definedEntityTypes»
+						services.AddScoped<I«element.name»Handler, «element.name»Handler>();
+						«ENDFOR»
+						«FOR element : definedScheduleTypes»
+						services.AddScoped<I«element.name»Handler, «element.name»Handler>();
+						«ENDFOR»
+						«FOR element : definedBookingTypes»
+						services.AddScoped<I«element.name»Handler, «element.name»Handler>();
+						«ENDFOR»
 			
 			            // Register repositories
 			            services.AddScoped<IUserRepository, UserRepository>();
-			            
+			            «FOR element : definedCustomerTypes»
+			            services.AddScoped<I«element.name»Repository, «element.name»Repository>();
+			            «ENDFOR»
+			            «FOR element : definedResourceTypes»
+			            services.AddScoped<I«element.name»Repository, «element.name»Repository>();
+			            «ENDFOR»
+			            «FOR element : definedEntityTypes»
+			            services.AddScoped<I«element.name»Repository, «element.name»Repository>();
+			            «ENDFOR»
+						«FOR element : definedScheduleTypes»
+						services.AddScoped<I«element.name»Repository, «element.name»Repository>();
+						«ENDFOR»
+						«FOR element : definedBookingTypes»
+						services.AddScoped<I«element.name»Repository, «element.name»Repository>();
+						«ENDFOR»
 			
 			            // In production, the React files will be served from this directory
 			            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });

@@ -4,11 +4,11 @@ import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.xtext.example.mydsl.generator.ClientAppGenerators.ClientAppGenerator
 import org.eclipse.emf.ecore.resource.Resource
 import org.xtext.example.mydsl.bookingDSL.*;
-import org.xtext.example.mydsl.generator.requestmodels.UserRequestModelGenerator
 import org.xtext.example.mydsl.generator.persistence.ModelsGenerator
 import org.xtext.example.mydsl.generator.persistence.RepositoriesGenerator
 import org.xtext.example.mydsl.generator.controllers.ControllerGenerator
 import org.xtext.example.mydsl.generator.handlers.HandlersGenerator
+import org.xtext.example.mydsl.generator.requestmodels.CreateRequestModelGenerator
 
 class ProjectGenerator {
 	
@@ -43,7 +43,7 @@ class ProjectGenerator {
 		ConfigurationGenerator.generateConfigurationFile(this.fsa, this.resource)
 		StartupGenerator.generateStartupFile(this.fsa, this.resource)
 		ProgramFileGenerator.generateProgramFile(this.fsa, this.resource)
-		UserRequestModelGenerator.generateRequestModelsFile(this.fsa, this.resource)
+		CreateRequestModelGenerator.generateRequestModelsFile(this.fsa, this.resource)
 		LaunchSettingsGenerator.generateLaunchSettingsFile(this.fsa, this.resource)
 		ModelsGenerator.generateModels(this.fsa, this.resource)
 		RepositoriesGenerator.generateRepositories(this.fsa, this.resource)

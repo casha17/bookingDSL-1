@@ -34,6 +34,7 @@ Declaration:
 	Customer | Resource | Entity | Schedule | Booking
 ;
 
+
 // customer keyword with identifier, extends is optional and most extend a customer type
 // within scope there can be one or more members
 Customer:
@@ -93,57 +94,48 @@ Relation:
 	'has' ('many' | 'one') relationType=[Declaration]
 ;
 
-
 Constraint:
-	'constraint' '(' Logic ')'
+	'constraint' '(' logic=Logic ')'
 ;
 
-
-// The top level of an expression 
 Logic:
 	Disjunction
 ;
 
-// Logical disjunction is the classical name for an "or" operation
 Disjunction:
 	left=Conjunction ('or' right=Conjunction)?
 ;
 
-// Logical conjunction is the classical name for an "and" operation
 Conjunction:
 	left=PrimitiveLogic ('and' right=PrimitiveLogic)?
 ;
 
-
-// 
 PrimitiveLogic:
-	ExternalCall | Comparison | '[' logic=Logic ']'
+	Comparison | ExternalCall | '(' logic=Logic ')'
 ;
 
 ExternalCall:
-	target=[External] '(' arguments+=Expression (','arguments+=Expression)* ')'
+	target=[External] '(' arguments+=Expression (',' arguments+=Expression)* ')' 
 ;
 
 Comparison:
-	left=Expression operator=CompareOperator right=Expression
+	left=Expression (operator=CompareOperator right=Expression)?
 ;
 
 CompareOperator:
 	'<' | '>' | '==' | '<=' | '>='
 ;
 
-
 Expression:
 	Factor (('+' {Plus.left=current} | '-' {Minus.left=current}) right=Factor)*
 ;
 
-
 Factor:
-	PrimitiveExpression (('*' {Mult.left=current} | '/' {Div.left=current}) right=PrimitiveExpression)
+	PrimitiveExpression (('*' {Mult.left=current} | '/' {Div.left=current}) right=PrimitiveExpression)*
 ;
 
 PrimitiveExpression:
-	Var | Number | '(' exp=Expression ')'
+	Var | Number
 ;
 
 Var:
@@ -153,5 +145,4 @@ Var:
 Number:
 	value=INT
 ;
-
 

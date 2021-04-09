@@ -9,12 +9,33 @@ class ControllerGenerator {
 		Resource resource)
 	{
 		var systemName = resource.allContents.toList.filter(System).get(0).getName();
-		genUserController(fsa, resource, systemName)
+		var definedCustomerTypes = resource.allContents.toList.filter(Customer);
+		var definedResourceTypes = resource.allContents.toList.filter(org.xtext.example.mydsl.bookingDSL.Resource);
+		var definedEntityTypes = resource.allContents.toList.filter(Entity);
+		var definedScheduleTypes = resource.allContents.toList.filter(Schedule);
+		var definedBookingTypes = resource.allContents.toList.filter(Booking);
+		
+		for (Customer c : definedCustomerTypes){
+			genControllerFile(fsa, resource, systemName, c.name)
+		}
+		for (org.xtext.example.mydsl.bookingDSL.Resource c : definedResourceTypes){
+			genControllerFile(fsa, resource, systemName, c.name)
+		}
+		for (Entity c : definedEntityTypes){
+			genControllerFile(fsa, resource, systemName, c.name)
+		}
+		for (Schedule c : definedScheduleTypes){
+			genControllerFile(fsa, resource, systemName, c.name)
+		}
+		for (Booking c : definedBookingTypes){
+			genControllerFile(fsa, resource, systemName, c.name)
+		}
 	}
 	
-	private static def void genUserController(IFileSystemAccess2 fsa,
-		Resource resource, String systemName){
-			fsa.generateFile('''«systemName»/«systemName»/Controllers/UserController.cs''',
+	//Have to pass name besides resource since not all resources have names (but all controllers will have)
+	private static def void genControllerFile(IFileSystemAccess2 fsa,
+		Resource resource, String systemName, String resourceName){
+			fsa.generateFile('''«systemName»/«systemName»/Controllers/«resourceName»Controller.cs''',
 				'''
 				using System;
 				using System.Threading.Tasks;
@@ -24,33 +45,33 @@ class ControllerGenerator {
 				
 				namespace «systemName».Controllers
 				{
-				    [Route("users")]
-				    public class UserController : ControllerBase
+				    [Route("«resourceName»")]
+				    public class «resourceName»Controller : ControllerBase
 				    {
-				        private readonly IUserHandler _userHandler;
+				        private readonly I«resourceName»Handler _«resourceName»Handler;
 				
-				        public UserController(IUserHandler userHandler)
+				        public «resourceName»Controller(I«resourceName»Handler «resourceName»Handler)
 				        {
-				            _userHandler = userHandler;
+				            _«resourceName»Handler = «resourceName»Handler;
 				        }
 				
 				        [HttpGet]
 				        [Route("")]
-				        public async Task<IActionResult> GetUsers(int page, int pageSize)
+				        public async Task<IActionResult> Get(int page, int pageSize)
 				        {
 				            return new ObjectResult(new []{"Casper", "Ulrik", "Morten", "Oskar"});
 				        }
 				
 				        [HttpGet]
 				        [Route("{id}")]
-				        public async Task<IActionResult> GetUser(Guid id)
+				        public async Task<IActionResult> Get(Guid id)
 				        {
 				            return new ObjectResult(new {name = "Casper"});
 				        }
 				
 				        [HttpPost]
 				        [Route("")]
-				        public async Task<IActionResult> CreateUser([FromBody]CreateUserRequestModel rm)
+				        public async Task<IActionResult> Create([FromBody]Create«resourceName»RequestModel rm)
 				        {
 				            var guid = new Guid();
 				            return new ObjectResult(new {id = guid.ToString(), name = rm.Name});

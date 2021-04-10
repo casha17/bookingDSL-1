@@ -38,9 +38,12 @@ class ModelsGenerator {
 			    public class «name» : IEntity
 			    {
 			        public Guid Id { get; set; }
-			        «FOR mem : dec.members»
-			        «IF (mem instanceof Attribute)»
-			        public «mem.type» «mem.name» {get; set;}
+			        «FOR mem : dec.eContents»
+			        «IF (mem instanceof Attribute )»
+			        «attribute(mem)»
+			        «ENDIF»
+			        «IF (mem instanceof Relation )»
+			        «relation(mem)»
 			        «ENDIF»
 			        «ENDFOR»
 			    }
@@ -48,17 +51,25 @@ class ModelsGenerator {
 			''')
 	}
 	
-	static def void test(Declaration dec){
-		for (mem : dec.members){
-			if(mem instanceof Attribute){
-				println("Type: " + mem.type);
-				println("Array: " + mem.array)
-				println("Class: " + mem.class)
-				println("EContents: " + mem.eContents)
-				println("Name" + mem.name)
-				println("Length: " + mem.length)
-				println("ToString: " + mem.toString)
-			}
-		}
+	static def CharSequence attribute(Attribute att){
+		'''
+		«IF (!att.array)»
+		public «att.type» «att.name» {get; set;}
+		«ENDIF»
+		«IF (att.array)»
+		public List<«att.type»> «att.name» {get; set;}
+		«ENDIF»
+		'''
+	}
+	
+	static def CharSequence relation(Relation re){
+		'''
+		«IF (!re.array)»
+		public «re.relationType.name» «re.name» {get; set;} 
+		«ENDIF»
+		«IF (re.array)»
+		public List<«re.relationType.name»> «re.name» {get; set;} 
+		«ENDIF»
+		'''
 	}
 }

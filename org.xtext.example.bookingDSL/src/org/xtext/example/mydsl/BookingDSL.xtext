@@ -91,7 +91,7 @@ enum Type:
 // A relation is defined with has, the multiplicity of the relation then defined with many or one, the
 // relation must point towards an existing named declaration
 Relation:
-	'has' ('many' | 'one') relationType=[Declaration]
+	'has' ('many' | 'one') name=ID ':' relationType=[Declaration] (array ?='[' (length=INT)? ']')?
 ;
 
 Constraint:

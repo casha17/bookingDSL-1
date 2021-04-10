@@ -64,10 +64,10 @@ class ModelsGenerator {
 	
 	static def CharSequence relation(Relation re){
 		'''
-		«IF (!re.array)»
+		«IF (re.plurality.equals("one"))»
 		public «re.relationType.name» «re.name» {get; set;} 
 		«ENDIF»
-		«IF (re.array)»
+		«IF (re.plurality.equals("many"))»
 		public List<«re.relationType.name»> «re.name» {get; set;} 
 		«ENDIF»
 		'''

@@ -11,7 +11,13 @@ class ModelsGenerator {
 		var systemName = resource.allContents.toList.filter(System).get(0).getName();
 		var declarations = resource.allContents.toList.filter(Declaration);
 		for(dec : declarations){
-			genFile(fsa, dec, systemName, dec.name)
+			if(dec instanceof Customer){
+				genFile(fsa, dec, systemName)
+			}else if(dec instanceof org.xtext.example.mydsl.bookingDSL.Resource){
+				genFile(fsa, dec, systemName)
+			}else{
+				genFile(fsa, dec, systemName, dec.name)
+			}
 		}
 		
 		fsa.generateFile('''«systemName»/«systemName»/Persistence/Models/IEntity.cs''', 
@@ -23,6 +29,64 @@ class ModelsGenerator {
 			    public interface IEntity
 			    {
 			        Guid Id { get; }
+			    }
+			}
+			''')
+	}
+	
+	static def void genFile(IFileSystemAccess2 fsa, Customer cust, String systemName){
+		var name = cust.name
+		fsa.generateFile('''«systemName»/«systemName»/Persistence/Models/«name».cs''', 
+			'''
+			using System;
+			
+			namespace «systemName».Persistence.Models
+			{
+				«IF(cust.superType === null)»
+				public class «name» : IEntity
+				{
+				    public Guid Id { get; set; }
+			    «ELSE»
+				public class «name» : IEntity, «cust.superType.name»
+				{
+			    «ENDIF»
+			        «FOR mem : cust.eContents»
+			        «IF (mem instanceof Attribute )»
+			        «attribute(mem)»
+			        «ENDIF»
+			        «IF (mem instanceof Relation )»
+			        «relation(mem)»
+			        «ENDIF»
+			        «ENDFOR»
+			    }
+			}
+			''')
+	}
+	
+	static def void genFile(IFileSystemAccess2 fsa, org.xtext.example.mydsl.bookingDSL.Resource res, String systemName){
+		var name = res.name
+		fsa.generateFile('''«systemName»/«systemName»/Persistence/Models/«name».cs''', 
+			'''
+			using System;
+			
+			namespace «systemName».Persistence.Models
+			{
+				«IF(res.superType === null)»
+				public class «name» : IEntity
+				{
+				    public Guid Id { get; set; }
+			    «ELSE»
+				public class «name» : IEntity, «res.superType.name»
+				{
+			    «ENDIF»
+			        «FOR mem : res.eContents»
+			        «IF (mem instanceof Attribute )»
+			        «attribute(mem)»
+			        «ENDIF»
+			        «IF (mem instanceof Relation )»
+			        «relation(mem)»
+			        «ENDIF»
+			        «ENDFOR»
 			    }
 			}
 			''')

@@ -9,6 +9,7 @@ import org.xtext.example.mydsl.generator.persistence.RepositoriesGenerator
 import org.xtext.example.mydsl.generator.controllers.ControllerGenerator
 import org.xtext.example.mydsl.generator.handlers.HandlersGenerator
 import org.xtext.example.mydsl.generator.requestmodels.CreateRequestModelGenerator
+import org.xtext.example.mydsl.generator.requestmodels.UpdateRequestModelGenerator
 
 class ProjectGenerator {
 	
@@ -44,6 +45,7 @@ class ProjectGenerator {
 		StartupGenerator.generateStartupFile(this.fsa, this.resource)
 		ProgramFileGenerator.generateProgramFile(this.fsa, this.resource)
 		CreateRequestModelGenerator.generateRequestModelsFile(this.fsa, this.resource)
+		UpdateRequestModelGenerator.generateRequestModelsFile(this.fsa, this.resource)
 		LaunchSettingsGenerator.generateLaunchSettingsFile(this.fsa, this.resource)
 		ModelsGenerator.generateModels(this.fsa, this.resource)
 		RepositoriesGenerator.generateRepositories(this.fsa, this.resource)

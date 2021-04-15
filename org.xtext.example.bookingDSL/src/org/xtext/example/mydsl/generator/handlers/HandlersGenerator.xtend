@@ -36,14 +36,24 @@ class HandlersGenerator {
 		Resource resource, String systemName, String name){
 			fsa.generateFile('''«systemName»/«systemName»/Handlers/«name»Handler.cs''', 
 			'''
+			using System;
+			using System.Collections.Generic;
+			using System.Linq;
 			using System.Threading.Tasks;
 			using «systemName».Persistence.Repositories;
+			using «systemName».Persistence.Models;
+			using «systemName».RequestModels;
+			using Microsoft.AspNetCore.Mvc.Infrastructure;
 			
 			namespace «systemName».Handlers
 			{
 			    public interface I«name»Handler
 			    {
-			        Task<bool> Create();
+			        Task<Guid> Create«name»(«name» model);
+			        Task<bool> Delete«name»(Guid id);
+			        Task<IEnumerable<«name»>> GetAll(int page, int pageSize);
+			        Task<«name»> Update(«name» model);
+			        Task<«name»> Get(Guid id);
 			    }
 			    
 			    public class «name»Handler : I«name»Handler
@@ -55,15 +65,31 @@ class HandlersGenerator {
 			            _«name»Repository = «name»Repository;
 			        }
 			
-			        public async Task<bool> Create()
-			        {
-			            // Do a lot of different logic here?
-			            
-			            // Insert into _userRepository
-			            
-			            // return a result in the end
-			            return true;
-			        }
+					Task<Guid> Create«name»(«name» model)
+					{
+						return _«name»Repository.Insert(model);
+					}
+					
+					Task<bool> Delete«name»(Guid id)
+					{
+						return _«name»Repository.Delete(id);	
+					}
+					
+					Task<IEnumerable<«name»>> GetAll(int page, int pageSize)
+					{
+						return _«name»Repository.GetPaged(page, pageSize);	
+					}
+					
+					Task<«name»> Update(«name» model)
+					{
+						return _«name»Repository.Put(model);
+					}
+					
+					Task<«name»> Get(Guid id)
+					{
+						return _«name»Repository.GetById(id);	
+					}
+			        
 			    }
 			}
 			''')

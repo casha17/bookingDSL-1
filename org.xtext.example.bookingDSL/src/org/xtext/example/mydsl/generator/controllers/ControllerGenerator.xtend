@@ -42,6 +42,9 @@ class ControllerGenerator {
 				using «systemName».Handlers;
 				using «systemName».RequestModels;
 				using Microsoft.AspNetCore.Mvc;
+				using System.Collections.Generic;
+				using AutoMapper;
+				using Booker.Persistence.Models;
 				
 				namespace «systemName».Controllers
 				{
@@ -49,32 +52,48 @@ class ControllerGenerator {
 				    public class «resourceName»Controller : ControllerBase
 				    {
 				        private readonly I«resourceName»Handler _«resourceName»Handler;
+				        private readonly IMapper _mapper;
 				
-				        public «resourceName»Controller(I«resourceName»Handler «resourceName»Handler)
+				        public «resourceName»Controller(I«resourceName»Handler «resourceName»Handler, IMapper mapper)
 				        {
 				            _«resourceName»Handler = «resourceName»Handler;
+				            _mapper = mapper;
 				        }
 				
 				        [HttpGet]
 				        [Route("")]
-				        public async Task<IActionResult> Get(int page, int pageSize)
+				        public async Task<IEnumerable<«resourceName»>> Get(int page = 0, int pageSize = 100)
 				        {
-				            return new ObjectResult(new []{"Casper", "Ulrik", "Morten", "Oskar"});
+				            return await _«resourceName»Handler.GetAll(page, pageSize);
 				        }
 				
 				        [HttpGet]
 				        [Route("{id}")]
-				        public async Task<IActionResult> Get(Guid id)
+				        public async Task<«resourceName»> Get(Guid id)
 				        {
-				            return new ObjectResult(new {name = "Casper"});
+				            return await _«resourceName»Handler.Get(id);
 				        }
 				
 				        [HttpPost]
 				        [Route("")]
-				        public async Task<IActionResult> Create([FromBody]Create«resourceName»RequestModel rm)
+				        public async Task<Guid> Create([FromBody]Create«resourceName»RequestModel rm)
 				        {
-				            var guid = new Guid();
-				            return new ObjectResult(new {id = guid.ToString(), name = rm.Name});
+				            var model = _mapper.Map<«resourceName»>(rm);
+				            return await _«resourceName».Create«resourceName»(model);
+				        }
+				        
+				        [HttpPut]
+				        [Route("")]
+				        public async Task<«resourceName»> Put([FromBody] «resourceName» model)
+				        {
+				        	return await _«resourceName»Handler.Update(model);
+				        }
+				        
+				        [HttpDelete]
+				        [Route("")]
+				        public async Task<bool> Delete(Guid id)
+				        {
+				        	return await _«resourceName»Handler.Delete«resourceName»(id);
 				        }
 				    }
 				}

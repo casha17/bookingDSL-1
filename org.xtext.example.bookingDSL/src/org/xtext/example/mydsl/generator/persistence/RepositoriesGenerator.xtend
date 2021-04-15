@@ -170,6 +170,12 @@ class RepositoriesGenerator {
 			            await Collection().InsertOneAsync(entity, new InsertOneOptions());
 			            return entity.Id;
 			        }
+			        
+			        public async Task<TEntity> Put(TEntity entity)
+			        {
+			        	var filter = Builders<TEntity>.Filter.Eq("Id", entity.Id);
+			        	var existing = this.GetById(entity.Id);
+			        	return await Collection().FindOneAndReplaceAsync(filter, entity);
 			    }
 			}
 			''')
@@ -190,6 +196,7 @@ class RepositoriesGenerator {
 			        Task<IEnumerable<TEntity>> GetPaged(int page, int pageSize);
 			        Task<TEntity> GetById(Guid id);
 			        Task<Guid> Insert(TEntity entity);
+			        Task<TEntity> Put(TEntity entity);
 			    }
 			}
 			''')

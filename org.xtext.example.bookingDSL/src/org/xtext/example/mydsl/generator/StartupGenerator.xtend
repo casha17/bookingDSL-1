@@ -30,6 +30,10 @@ class StartupGenerator{
 			using Microsoft.Extensions.Hosting;
 			using Microsoft.Extensions.Options;
 			using MongoDB.Driver;
+			using AutoMapper;
+			using «systemName».Mapping;
+			using «systemName».Persistence.Models;
+			using «systemName».RequestModels;
 			
 			namespace «systemName»
 			{
@@ -87,13 +91,33 @@ class StartupGenerator{
 						services.AddScoped<I«element.name»Repository, «element.name»Repository>();
 						«ENDFOR»
 			
+						//Register Mapper
+						var mapperConfig = new MapperConfiguration(mc =>
+						{
+							mc.AddProfile(new MappingProfile());
+						});
+						
+						IMapper mapper = mapperConfig.CreateMapper();
+						services.AddSingleton(mapper);
+						
 			            // In production, the React files will be served from this directory
 			            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
+			        
+			        	//Add swagger
+			        	services.AddSwaggerGen();
 			        }
 			
 			        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 			        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 			        {
+			//Swaggerrr
+			        	app.UseSwagger();
+			        	//Enable middleware to serve ui
+			        	app.UseSwaggerUI(c =>
+			        	{
+			        	    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Booker app");
+			     		});        	
+			        	
 			            if (env.IsDevelopment())
 			            {
 			                app.UseDeveloperExceptionPage();

@@ -24,8 +24,10 @@ class CsprojGenerator {
 			    </PropertyGroup>
 			
 			    <ItemGroup>
+			    	<PackageReference Include="AutoMapper" Version="10.1.1" />
 			        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.9" />
 			        <PackageReference Include="MongoDB.Driver" Version="2.12.1" />
+			        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.2" />
 			    </ItemGroup>
 			
 			    <ItemGroup>

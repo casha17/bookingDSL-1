@@ -23,6 +23,7 @@ class ModelsGenerator {
 		fsa.generateFile('''«systemName»/«systemName»/Persistence/Models/IEntity.cs''', 
 			'''
 			using System;
+			using System.Collections.Generic;
 			
 			namespace «systemName».Persistence.Models
 			{
@@ -39,6 +40,7 @@ class ModelsGenerator {
 		fsa.generateFile('''«systemName»/«systemName»/Persistence/Models/«name».cs''', 
 			'''
 			using System;
+			using System.Collections.Generic;
 			
 			namespace «systemName».Persistence.Models
 			{
@@ -46,9 +48,10 @@ class ModelsGenerator {
 				public class «name» : IEntity
 				{
 			    «ELSE»
-				public class «name» : IEntity, «cust.superType.name»
+				public class «name» : «cust.superType.name», IEntity
 				{
 			    «ENDIF»
+			    	public Guid Id {get; set;}
 			        «FOR mem : cust.eContents»
 			        «IF (mem instanceof Attribute )»
 			        «attribute(mem)»
@@ -76,6 +79,7 @@ class ModelsGenerator {
 			    «ELSE»
 				public class «name» : IEntity, «res.superType.name»
 				{
+					public Guid Id {get; set;}
 			    «ENDIF»
 			        «FOR mem : res.eContents»
 			        «IF (mem instanceof Attribute )»
@@ -99,6 +103,7 @@ class ModelsGenerator {
 			{
 			    public class «name» : IEntity
 			    {
+			    	public Guid Id {get; set;}
 			        «FOR mem : dec.eContents»
 			        «IF (mem instanceof Attribute )»
 			        «attribute(mem)»

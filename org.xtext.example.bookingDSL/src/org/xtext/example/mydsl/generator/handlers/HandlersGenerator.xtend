@@ -65,27 +65,27 @@ class HandlersGenerator {
 			            _«name»Repository = «name»Repository;
 			        }
 			
-					Task<Guid> Create«name»(«name» model)
+					public Task<Guid> Create«name»(«name» model)
 					{
 						return _«name»Repository.Insert(model);
 					}
 					
-					Task<bool> Delete«name»(Guid id)
+					public Task<bool> Delete«name»(Guid id)
 					{
 						return _«name»Repository.Delete(id);	
 					}
 					
-					Task<IEnumerable<«name»>> GetAll(int page, int pageSize)
+					public Task<IEnumerable<«name»>> GetAll(int page, int pageSize)
 					{
 						return _«name»Repository.GetPaged(page, pageSize);	
 					}
 					
-					Task<«name»> Update(«name» model)
+					public Task<«name»> Update(«name» model)
 					{
 						return _«name»Repository.Put(model);
 					}
 					
-					Task<«name»> Get(Guid id)
+					public Task<«name»> Get(Guid id)
 					{
 						return _«name»Repository.GetById(id);	
 					}

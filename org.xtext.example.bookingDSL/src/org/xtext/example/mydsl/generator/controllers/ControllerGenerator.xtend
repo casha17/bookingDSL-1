@@ -44,7 +44,7 @@ class ControllerGenerator {
 				using Microsoft.AspNetCore.Mvc;
 				using System.Collections.Generic;
 				using AutoMapper;
-				using Booker.Persistence.Models;
+				using «systemName».Persistence.Models;
 				
 				namespace «systemName».Controllers
 				{
@@ -79,7 +79,7 @@ class ControllerGenerator {
 				        public async Task<Guid> Create([FromBody]Create«resourceName»RequestModel rm)
 				        {
 				            var model = _mapper.Map<«resourceName»>(rm);
-				            return await _«resourceName».Create«resourceName»(model);
+				            return await _«resourceName»Handler.Create«resourceName»(model);
 				        }
 				        
 				        [HttpPut]

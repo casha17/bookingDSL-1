@@ -14,15 +14,17 @@ class MappingProfileGenerator {
 		fsa.generateFile('''«systemName»/«systemName»/Mapping/MappingProfile.cs''', 
 		'''
 		using AutoMapper;
-		using Booker.Persistence.Models;
-		using Booker.RequestModels;
+		using «systemName».Persistence.Models;
+		using «systemName».RequestModels;
 		using System;
 		using System.Collections.Generic;
 		using System.Linq;
 		using System.Threading.Tasks;
 		using System;
+		using «systemName».RequestModels;
+		using «systemName».Persistence.Models;
 		
-		namespace «systemName».«systemName».Mapping
+		namespace «systemName».Mapping
 		{
 		    public class MappingProfile : Profile{
 		    	public MappingProfile()

@@ -10,6 +10,7 @@ import org.xtext.example.mydsl.generator.controllers.ControllerGenerator
 import org.xtext.example.mydsl.generator.handlers.HandlersGenerator
 import org.xtext.example.mydsl.generator.requestmodels.CreateRequestModelGenerator
 import org.xtext.example.mydsl.generator.requestmodels.UpdateRequestModelGenerator
+import org.xtext.example.mydsl.generator.mapping.MappingProfileGenerator
 
 class ProjectGenerator {
 	
@@ -51,6 +52,7 @@ class ProjectGenerator {
 		RepositoriesGenerator.generateRepositories(this.fsa, this.resource)
 		ControllerGenerator.generateControllers(this.fsa, this.resource)
 		HandlersGenerator.generateHandlers(this.fsa, this.resource)
+		MappingProfileGenerator.generateModels(this.fsa, this.resource)
 	}
 	
 	 	

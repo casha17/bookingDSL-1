@@ -25,6 +25,10 @@ class UpdateRequestModelGenerator {
 		Customer cust, String systemName, String name){
 		fsa.generateFile('''«systemName»/«systemName»/RequestModels/Update«name»RequestModels.cs''', 
 		'''
+		using «systemName».Persistence.Models;
+		using System.Collections.Generic;
+		using System;
+				
 		namespace «systemName».RequestModels
 		{
 			«IF(cust.superType !== null)»
@@ -32,7 +36,7 @@ class UpdateRequestModelGenerator {
 			{
 		    «ENDIF»
 		    «IF (cust.superType === null) »
-		    public class Updatee«name»RequestModel
+		    public class Update«name»RequestModel
 		    {
 		    public Guid Id {get; set;}
 		    «ENDIF»
@@ -53,6 +57,10 @@ class UpdateRequestModelGenerator {
 		Declaration dec, String systemName, String name){
 		fsa.generateFile('''«systemName»/«systemName»/RequestModels/Update«name»RequestModels.cs''', 
 		'''
+		using «systemName».Persistence.Models;
+		using System.Collections.Generic;
+		using System;
+				
 		namespace «systemName».RequestModels
 		{
 		    public class Update«name»RequestModel
@@ -75,6 +83,10 @@ class UpdateRequestModelGenerator {
 		org.xtext.example.mydsl.bookingDSL.Resource resource, String systemName, String name){
 		fsa.generateFile('''«systemName»/«systemName»/RequestModels/Update«name»RequestModels.cs''', 
 		'''
+		using «systemName».Persistence.Models;
+		using System.Collections.Generic;
+		using System;
+		
 		namespace «systemName».RequestModels
 		{
 			«IF(resource.superType === null)»

@@ -176,6 +176,7 @@ class RepositoriesGenerator {
 			        	var filter = Builders<TEntity>.Filter.Eq("Id", entity.Id);
 			        	var existing = this.GetById(entity.Id);
 			        	return await Collection().FindOneAndReplaceAsync(filter, entity);
+			        }
 			    }
 			}
 			''')

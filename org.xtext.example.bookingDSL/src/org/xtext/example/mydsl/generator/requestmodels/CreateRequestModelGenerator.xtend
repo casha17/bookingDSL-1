@@ -25,6 +25,8 @@ class CreateRequestModelGenerator {
 		Customer cust, String systemName, String name){
 		fsa.generateFile('''«systemName»/«systemName»/RequestModels/Create«name»RequestModels.cs''', 
 		'''
+		using «systemName».Persistence.Models;
+		using System.Collections.Generic;
 		namespace «systemName».RequestModels
 		{
 			«IF(cust.superType !== null)»
@@ -52,6 +54,8 @@ class CreateRequestModelGenerator {
 		Declaration dec, String systemName, String name){
 		fsa.generateFile('''«systemName»/«systemName»/RequestModels/Create«name»RequestModels.cs''', 
 		'''
+		using «systemName».Persistence.Models;
+		using System.Collections.Generic;
 		namespace «systemName».RequestModels
 		{
 		    public class Create«name»RequestModel
@@ -73,11 +77,13 @@ class CreateRequestModelGenerator {
 		org.xtext.example.mydsl.bookingDSL.Resource resource, String systemName, String name){
 		fsa.generateFile('''«systemName»/«systemName»/RequestModels/Create«name»RequestModels.cs''', 
 		'''
+		using «systemName».Persistence.Models;
+		using System.Collections.Generic;
 		namespace «systemName».RequestModels
 		{
 			«IF(resource.superType === null)»
-		    public class Create«name»RequestModel
-		    {
+			public class Create«name»RequestModel
+			{
 		    «ENDIF»
 		    «IF(resource.superType !== null)»
 			public class Create«name»RequestModel : Create«resource.superType.name»RequestModel

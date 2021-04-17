@@ -47,7 +47,7 @@ class DockerComposeGenerator{
 			
 			COPY --from=build /app/publish .
 			
-			ENTRYPOINT ["dotnet", "Booker.dll"]
+			ENTRYPOINT ["dotnet", "«systemName».dll"]
 			'''
 		)
 	}

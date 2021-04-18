@@ -81,6 +81,7 @@ class ModelsGenerator {
 				{
 					public Guid Id {get; set;}
 			    «ENDIF»
+			    	public Guid Id {get; set;}
 			        «FOR mem : res.eContents»
 			        «IF (mem instanceof Attribute )»
 			        «attribute(mem)»

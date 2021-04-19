@@ -46,16 +46,16 @@ class ModelGenerator {
 		'''
 		export type «declaration.name.toFirstUpper» = {
 			«FOR mem : declaration.members»
-			«IF (mem instanceof Attribute)»
-			«IF mem.type.value == 0»
-			«mem.name»: number
-			
-			«ELSEIF mem.type.value == 2»
-			«mem.name»: boolean
-			«ELSE»
-			«mem.name»: «mem.type»;
-			«ENDIF»
-			«ENDIF»
+				«IF (mem instanceof Attribute)»
+					«IF mem.type.value == 0 || mem.type.value == 3»
+					«mem.name»: number
+					
+					«ELSEIF mem.type.value == 2»
+					«mem.name»: boolean
+					«ELSE»
+					«mem.name»: «mem.type»;
+					«ENDIF»
+				«ENDIF»
 			«ENDFOR»
 		   
 		} 

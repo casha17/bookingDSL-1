@@ -62,38 +62,64 @@ class ControllerGenerator {
 				
 				        [HttpGet]
 				        [Route("")]
-				        public async Task<IEnumerable<«resourceName»>> Get(int page = 0, int pageSize = 100)
+				        public async Task<ActionResult<IEnumerable<«resourceName»>>> Get(int page = 0, int pageSize = 100)
 				        {
-				            return await _«resourceName»Handler.GetAll(page, pageSize);
+				            var result = await _«resourceName»Handler.GetAll(page, pageSize);
+				            
+				            if (result == null)
+				            	return NotFound();
+				            
+				            return Ok(result);
 				        }
 				
 				        [HttpGet]
 				        [Route("{id}")]
-				        public async Task<«resourceName»> Get(Guid id)
+				        public async Task<ActionResult<«resourceName»>> Get(Guid id)
 				        {
-				            return await _«resourceName»Handler.Get(id);
+				            var result = await _«resourceName»Handler.Get(id);
+				            
+				            if (result == null)
+				            	return NotFound();
+				            				            
+				           	return Ok(result);
 				        }
 				
 				        [HttpPost]
 				        [Route("")]
-				        public async Task<Guid> Create([FromBody]Create«resourceName»RequestModel rm)
+				        public async Task<ActionResult<Guid>> Create([FromBody]Create«resourceName»RequestModel rm)
 				        {
 				            var model = _mapper.Map<«resourceName»>(rm);
-				            return await _«resourceName»Handler.Create«resourceName»(model);
+				            var result = await _«resourceName»Handler.Create«resourceName»(model);
+				            
+				            if (result == null)
+				            	return NotFound();
+				            				            
+				            return Ok(result);
 				        }
 				        
 				        [HttpPut]
 				        [Route("")]
-				        public async Task<«resourceName»> Put([FromBody] «resourceName» model)
+				        public async Task<ActionResult<«resourceName»>> Put([FromBody] Update«resourceName»RequestModel rm)
 				        {
-				        	return await _«resourceName»Handler.Update(model);
+				        	var model = _mapper.Map<«resourceName»>(rm);
+				        	var result = await _«resourceName»Handler.Update(model);
+				        	
+				        	if (result == null)
+				        		return NotFound();
+				        					            
+				        	return Ok(result);
 				        }
 				        
 				        [HttpDelete]
 				        [Route("")]
-				        public async Task<bool> Delete(Guid id)
+				        public async Task<ActionResult<bool>> Delete(Guid id)
 				        {
-				        	return await _«resourceName»Handler.Delete«resourceName»(id);
+				        	var result = await _«resourceName»Handler.Delete«resourceName»(id);
+				        	
+				        	if (!result)
+				        	     return NotFound();
+				        	
+				        	return Ok(result);
 				        }
 				    }
 				}

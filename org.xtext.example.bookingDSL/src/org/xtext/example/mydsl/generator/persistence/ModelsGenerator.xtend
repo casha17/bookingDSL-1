@@ -47,11 +47,11 @@ class ModelsGenerator {
 				«IF(cust.superType === null)»
 				public class «name» : IEntity
 				{
+					public Guid Id {get; set;}
 			    «ELSE»
 				public class «name» : «cust.superType.name», IEntity
 				{
 			    «ENDIF»
-			    	public Guid Id {get; set;}
 			        «FOR mem : cust.eContents»
 			        «IF (mem instanceof Attribute )»
 			        «attribute(mem)»
@@ -76,12 +76,11 @@ class ModelsGenerator {
 				«IF(res.superType === null)»
 				public class «name» : IEntity
 				{
-			    «ELSE»
-				public class «name» : IEntity, «res.superType.name»
-				{
 					public Guid Id {get; set;}
+			    «ELSE»
+				public class «name» : «res.superType.name», IEntity
+				{
 			    «ENDIF»
-			    	public Guid Id {get; set;}
 			        «FOR mem : res.eContents»
 			        «IF (mem instanceof Attribute )»
 			        «attribute(mem)»

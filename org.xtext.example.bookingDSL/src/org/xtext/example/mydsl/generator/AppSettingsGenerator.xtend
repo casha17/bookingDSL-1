@@ -22,7 +22,7 @@ class AppSettingsGenerator {
 			    },
 			
 			    "PersistenceConfiguration": {
-			      "MongoClusterConnectionString": "mongodb://localhost:32768",
+			      "MongoClusterConnectionString": "mongodb://mongodb_container:27017",
 			      "DefaultDatabaseName": "«systemName»_Repo"
 			    },
 			  

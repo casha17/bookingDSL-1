@@ -103,12 +103,11 @@ class ModelGenerator {
 				«FOR mem : declaration.members»
 					«IF (mem instanceof Attribute)»
 						«IF mem.type.value == 0 || mem.type.value == 3»
-						«mem.name»: number
-						
+						«this.generateAttribute(mem, "number")»
 						«ELSEIF mem.type.value == 2»
-						«mem.name»: boolean
+						«this.generateAttribute(mem, "boolean")»
 						«ELSE»
-						«mem.name»: «mem.type»;
+						«this.generateAttribute(mem, "string")»
 						«ENDIF»
 					«ENDIF»
 					«IF (mem instanceof Relation)»
@@ -159,12 +158,11 @@ class ModelGenerator {
 			«FOR mem : declaration.members»
 				«IF (mem instanceof Attribute)»
 					«IF mem.type.value == 0 || mem.type.value == 3»
-					«mem.name»: number
-					
+					«this.generateAttribute(mem, "number")»
 					«ELSEIF mem.type.value == 2»
-					«mem.name»: boolean
+					«this.generateAttribute(mem, "boolean")»
 					«ELSE»
-					«mem.name»: «mem.type»;
+					«this.generateAttribute(mem, "string")»
 					«ENDIF»
 				«ENDIF»
 				«IF (mem instanceof Relation)»

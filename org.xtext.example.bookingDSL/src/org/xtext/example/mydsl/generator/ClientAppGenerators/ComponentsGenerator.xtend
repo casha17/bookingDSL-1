@@ -27,7 +27,8 @@ class ComponentsGenerator {
 		import React, { Component } from 'react';
 		import { Redirect, Route, Switch } from 'react-router';
 		import { BrowserRouter as Router} from 'react-router-dom';
-		import HomePage from '../pages/HomePage';
+		import LoginPage from '../pages/LoginPage';
+		import BookingPage from '../pages/BookingPage';
 		import ResourceOverviewPage from '../pages/management/ResourceOverviewPage';
 		«FOR entity : definedEntityTypes»
 		import «entity.name»sOverviewPage from '../pages/management/«entity.name»/«entity.name»sOverviewPage';
@@ -52,22 +53,23 @@ class ComponentsGenerator {
 		      <Switch>
 		      	«FOR entity : definedEntityTypes»
 		      	<Route exact path="/management/«entity.name»s_overview" component={«entity.name»sOverviewPage}/>
-		      	<Route exact path="/management/«entity.name»_update" component={Update«entity.name»Page}/>
+		      	<Route exact path="/management/«entity.name»_update/:id" component={Update«entity.name»Page}/>
 		      	<Route exact path="/management/«entity.name»_create" component={Create«entity.name»Page}/>
 		      	«ENDFOR»
 		      	«FOR resource : definedResourceTypes»
 		      	<Route exact path="/management/«resource.name»s_overview" component={«resource.name»sOverviewPage}/>
-		      	<Route exact path="/management/«resource.name»_update" component={Update«resource.name»Page}/>
+		      	<Route exact path="/management/«resource.name»_update/:id" component={Update«resource.name»Page}/>
 		      	<Route exact path="/management/«resource.name»_create" component={Create«resource.name»Page}/>
 		      	«ENDFOR»
 		      	«FOR customer : definedCustomerTypes»
 		      	<Route exact path="/management/«customer.name»s_overview" component={«customer.name»sOverviewPage}/>
-		      	<Route exact path="/management/«customer.name»_update" component={Update«customer.name»Page}/>
+		      	<Route exact path="/management/«customer.name»_update/:id" component={Update«customer.name»Page}/>
 		      	<Route exact path="/management/«customer.name»_create" component={Create«customer.name»Page}/>
 		      	«ENDFOR»
 		      	<Route exact path="/management/overview" component={ResourceOverviewPage}/>
-		        <Route exact path="/home" component={HomePage}/>
-		        <Redirect to="/home"/>
+		        <Route exact path="/booking/:id" component={BookingPage}/>
+        		<Route exact path="/login" component={LoginPage}/>
+        		<Redirect to="/login"/>
 		      </Switch>
 		    </Router>
 		  }

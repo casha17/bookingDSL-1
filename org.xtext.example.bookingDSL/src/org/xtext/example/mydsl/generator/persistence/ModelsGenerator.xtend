@@ -70,6 +70,7 @@ class ModelsGenerator {
 		fsa.generateFile('''«systemName»/«systemName»/Persistence/Models/«name».cs''', 
 			'''
 			using System;
+			using System.Collections.Generic;
 			
 			namespace «systemName».Persistence.Models
 			{
@@ -98,6 +99,7 @@ class ModelsGenerator {
 		fsa.generateFile('''«systemName»/«systemName»/Persistence/Models/«name».cs''', 
 			'''
 			using System;
+			using System.Collections.Generic;
 			
 			namespace «systemName».Persistence.Models
 			{

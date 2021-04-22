@@ -99,7 +99,7 @@ Constraint:
 ;
 
 Logic:
-	Disjunction
+	disjunction=Disjunction
 ;
 
 Disjunction:
@@ -111,7 +111,7 @@ Conjunction:
 ;
 
 PrimitiveLogic:
-	Comparison | ExternalCall | '(' logic=Logic ')'
+	comparison=Comparison | externalCall=ExternalCall | '(' logic=Logic ')'
 ;
 
 ExternalCall:
@@ -127,15 +127,15 @@ CompareOperator:
 ;
 
 Expression:
-	Factor (('+' {Plus.left=current} | '-' {Minus.left=current}) right=Factor)*
+	leftFactor=Factor (('+' {Plus.left=current} | '-' {Minus.left=current}) rightFactor=Factor)*
 ;
 
 Factor:
-	PrimitiveExpression (('*' {Mult.left=current} | '/' {Div.left=current}) right=PrimitiveExpression)*
+	leftPrimitiveExpression=PrimitiveExpression (('*' {Mult.left=current} | '/' {Div.left=current}) rightPrimitiveExpression=PrimitiveExpression)*
 ;
 
 PrimitiveExpression:
-	Var | Number
+	var=Var | number=Number
 ;
 
 Var:

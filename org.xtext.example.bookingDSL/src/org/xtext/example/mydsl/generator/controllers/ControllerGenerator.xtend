@@ -130,9 +130,42 @@ class ControllerGenerator {
 				        	
 				        	return Ok(result);
 				        }
+				        
+				        «IF(dec instanceof org.xtext.example.mydsl.bookingDSL.Resource)»
+				        «scheduleRelationInterface(dec)»
+				        «ENDIF»
 				    }
 				}
 				'''
 			)
+		}
+		
+	static def CharSequence scheduleRelationInterface(org.xtext.example.mydsl.bookingDSL.Resource res){
+			var result = ''''''
+			var alreadyAddedScheduleTypes = newArrayList
+			
+			for(subres : res.eContents){
+				if(subres instanceof Relation){
+					if(subres.plurality.equals("many")){
+						if(!alreadyAddedScheduleTypes.contains(subres.relationType.name)){
+							result = '''
+[HttpPut]
+[Route("Add«subres.relationType.name»sToAll")]
+public async Task<ActionResult<List<«res.name»>>> Add«subres.relationType.name»sToAll([FromBody] List<«subres.relationType.name»> list)
+{
+	var result = await _«res.name»Handler.Add«subres.relationType.name»ToAllResources(list);
+	
+	if(result == null) return BadRequest();
+	
+	return Ok(result);
+}
+							'''
+							alreadyAddedScheduleTypes.add(subres.relationType.name);
+						}
+					}
+				}
+			}
+			
+			return result
 		}
 }

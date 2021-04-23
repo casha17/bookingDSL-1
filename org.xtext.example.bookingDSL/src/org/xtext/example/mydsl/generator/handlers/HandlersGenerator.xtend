@@ -12,6 +12,7 @@ class HandlersGenerator {
 	{
 		var systemName = resource.allContents.toList.filter(System).get(0).getName();
 		var declarations = resource.allContents.toList.filter(Declaration);
+		alreadyDeclared = newArrayList //reload when creating new project since static
 		
 		for (Declaration c : declarations){
 			genHandlerFile(fsa, resource, systemName, c.name, c)
@@ -40,6 +41,9 @@ class HandlersGenerator {
 			        Task<List<«name»>> GetAll(int page, int pageSize);
 			        Task<«name»> Update(«name» model);
 			        Task<«name»> Get(Guid id);
+			        «IF(dec instanceof org.xtext.example.mydsl.bookingDSL.Resource)»
+			        «scheduleRelationInterface(dec)»
+			        «ENDIF»
 			    }
 			    
 			    public class «name»Handler : I«name»Handler
@@ -67,14 +71,14 @@ class HandlersGenerator {
 			            			       «ENDFOR»
 			        }
 			
-					public Task<Guid> Create«name»(«name» model)
+					public async Task<Guid> Create«name»(«name» model)
 					{
 						«FOR subdec : dec.eContents»
 						«IF(subdec instanceof Relation)»
 						«relationCreate(name, subdec)»
 						«ENDIF»
 						«ENDFOR»
-						return _«name»Repository.Insert(model);
+						return await _«name»Repository.Insert(model);
 					}
 					
 					public async Task<bool> Delete«name»(Guid id)
@@ -120,6 +124,9 @@ class HandlersGenerator {
 						return finalResult;	
 					}
 			        
+			        «IF(dec instanceof org.xtext.example.mydsl.bookingDSL.Resource)»
+			        «scheduleRelationBody(dec)»
+			        «ENDIF»
 			    }
 			}
 			''')
@@ -163,13 +170,13 @@ class HandlersGenerator {
 			
 			if(re.plurality.equals("one")){
 				result = '''model.«re.name».Id = new Guid();
-_«re.relationType.name»Handler.Create«re.relationType.name»(model.«re.name»);
+await _«re.relationType.name»Handler.Create«re.relationType.name»(model.«re.name»);
 				'''
 			}else if(re.plurality.equals("many")){
 				result = '''foreach(var sub in model.«re.name»)
 {
 sub.Id = new Guid();
-_«re.relationType.name»Handler.Create«re.relationType.name»(sub);
+await _«re.relationType.name»Handler.Create«re.relationType.name»(sub);
 }
 				'''
 			}
@@ -228,4 +235,50 @@ foreach(var item in all)
 			
 			return result;
 		}
+		
+		static def CharSequence scheduleRelationInterface(org.xtext.example.mydsl.bookingDSL.Resource res){
+			var result = ''''''
+			var alreadyAddedScheduleTypes = newArrayList
+			
+			for(subres : res.eContents){
+				if(subres instanceof Relation){
+					if(subres.plurality.equals("many")){
+						if(!alreadyAddedScheduleTypes.contains(subres.relationType.name)){
+							result += '''Task<List<«res.name»>> Add«subres.relationType.name»ToAllResources(List<«subres.relationType.name»> collection);
+							'''
+							alreadyAddedScheduleTypes.add(subres.relationType.name);
+						}
+					}
+				}
+			}
+			
+			return result
+		}
+		
+		static def CharSequence scheduleRelationBody(org.xtext.example.mydsl.bookingDSL.Resource res){
+			var result = ''''''
+			
+			for(subres : res.eContents){
+				if(subres instanceof Relation){
+					if(subres.plurality.equals("many")){
+							result += '''public async Task<List<«res.name»>> Add«subres.relationType.name»ToAllResources(List<«subres.relationType.name»> collection)
+{
+	var all = await GetAll(0, 1000);
+	
+	foreach(var res in all)
+	{
+		res.«subres.name».AddRange(collection);
+		await this.Update(res);
+	}
+	
+	return all.ToList();
+}
+							'''
+					}
+				}
+			}
+			
+			return result
+		}
+		
 }

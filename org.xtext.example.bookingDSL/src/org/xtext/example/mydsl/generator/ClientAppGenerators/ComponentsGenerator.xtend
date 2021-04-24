@@ -4,6 +4,7 @@ import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.emf.ecore.resource.Resource
 import org.xtext.example.mydsl.bookingDSL.Customer
 import org.xtext.example.mydsl.bookingDSL.Entity
+import org.xtext.example.mydsl.bookingDSL.Schedule
 
 class ComponentsGenerator {
 	
@@ -22,6 +23,7 @@ class ComponentsGenerator {
 		var definedCustomerTypes = resource.allContents.toList.filter(Customer);
 		var definedResourceTypes = resource.allContents.toList.filter(org.xtext.example.mydsl.bookingDSL.Resource);
 		var definedEntityTypes = resource.allContents.toList.filter(Entity);
+		var definedScheduleTypes = resource.allContents.toList.filter(Schedule);
 		
 		this.fsa.generateFile(this.componentsRoot + "/App.tsx", '''
 		import React, { Component } from 'react';
@@ -45,6 +47,11 @@ class ComponentsGenerator {
 		import Update«customer.name»Page from '../pages/management/«customer.name»/Update«customer.name»Page';
 		import Create«customer.name»Page from '../pages/management/«customer.name»/Create«customer.name»Page';
 		«ENDFOR»
+		«FOR schedule : definedScheduleTypes»
+		import «schedule.name»sOverviewPage from '../pages/management/«schedule.name»/«schedule.name»sOverviewPage';
+		import Update«schedule.name»Page from '../pages/management/«schedule.name»/Update«schedule.name»Page';
+		import Create«schedule.name»Page from '../pages/management/«schedule.name»/Create«schedule.name»Page';
+		«ENDFOR»
 		
 		const App = () => {
 		
@@ -65,6 +72,11 @@ class ComponentsGenerator {
 		      	<Route exact path="/management/«customer.name»s_overview" component={«customer.name»sOverviewPage}/>
 		      	<Route exact path="/management/«customer.name»_update/:id" component={Update«customer.name»Page}/>
 		      	<Route exact path="/management/«customer.name»_create" component={Create«customer.name»Page}/>
+		      	«ENDFOR»
+		      	«FOR schedule : definedScheduleTypes»
+		      	<Route exact path="/management/«schedule.name»s_overview" component={«schedule.name»sOverviewPage}/>
+		      	<Route exact path="/management/«schedule.name»_update/:id" component={Update«schedule.name»Page}/>
+		      	<Route exact path="/management/«schedule.name»_create" component={Create«schedule.name»Page}/>
 		      	«ENDFOR»
 		      	<Route exact path="/management/overview" component={ResourceOverviewPage}/>
 		        <Route exact path="/booking/:id" component={BookingPage}/>

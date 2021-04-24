@@ -12,21 +12,24 @@ class HandlersGenerator {
 	{
 		var systemName = resource.allContents.toList.filter(System).get(0).getName();
 		var declarations = resource.allContents.toList.filter(Declaration);
-		alreadyDeclared = newArrayList //reload when creating new project since static
+		 //reload when creating new project since static
 		
 		for (Declaration c : declarations){
+			alreadyDeclared = newArrayList
 			genHandlerFile(fsa, resource, systemName, c.name, c)
 		}
 	}
 	
 	private static def void genHandlerFile(IFileSystemAccess2 fsa,
 		Resource resource, String systemName, String name, Declaration dec){
+			
 			fsa.generateFile('''«systemName»/«systemName»/Handlers/«name»Handler.cs''', 
 			'''
 			using System;
 			using System.Collections.Generic;
 			using System.Linq;
 			using System.Threading.Tasks;
+			using AutoMapper;
 			using «systemName».Persistence.Repositories;
 			using «systemName».Persistence.Models;
 			using «systemName».RequestModels;
@@ -70,6 +73,15 @@ class HandlersGenerator {
 			            			       «ENDIF»
 			            			       «ENDFOR»
 			        }
+			        
+			        private IMapper CreateMapperConf<T>()
+	        		{
+	        			var config = new MapperConfiguration(cfg =>
+	        			{
+	        				cfg.CreateMap<T, T>();
+	        			});
+	        			return config.CreateMapper();
+	        		}
 			
 					public async Task<Guid> Create«name»(«name» model)
 					{
@@ -89,7 +101,8 @@ class HandlersGenerator {
 					public async Task<List<«name»>> GetAll(int page, int pageSize)
 					{
 						var all = await _«name»Repository.GetPaged(page, pageSize);	
-						var protectiveCopy = all;
+						var map = CreateMapperConf<«name»>();
+						var protectiveCopy = all.Select(e => map.Map<«name», «name»>(e)).ToList();
 						var finalResult = new List<«name»>();
 						
 						«FOR subdec : dec.eContents»
@@ -115,7 +128,8 @@ class HandlersGenerator {
 					public async Task<«name»> Get(Guid id)
 					{
 						var result = await _«name»Repository.GetById(id);
-						var finalResult = result;
+						var map = CreateMapperConf<«name»>();
+						var finalResult = map.Map<«name», «name»>(result);
 						«FOR subdec : dec.eContents»
 						«IF(subdec instanceof Relation)»
 						«relationGet(name, subdec)»
@@ -202,11 +216,13 @@ await _«re.relationType.name»Handler.Create«re.relationType.name»(sub);
 			}else if(re.plurality.equals("many")){
 				result = '''if(result.«re.name» != null)
 {
+	var list = new List<«re.relationType.name»>();
 	foreach(var item in result.«re.name»)
 	{
 		var res = await _«re.relationType.name»Handler.Get(item.Id);
-		if (res != null) finalResult.«re.name».Add(res);
+		if (res != null) list.Add(res);
 	}
+	finalResult.«re.name» = list;
 }'''
 			}
 			

@@ -30,6 +30,7 @@ class ManagementPagesGenerator {
 		var definedCustomerTypes = resource.allContents.toList.filter(Customer);
 		var definedResourceTypes = resource.allContents.toList.filter(org.xtext.example.mydsl.bookingDSL.Resource);
 		var definedEntityTypes = resource.allContents.toList.filter(Entity);
+		var definedScheduleTypes = resource.allContents.toList.filter(Schedule);
 		
 		for (Customer c : definedCustomerTypes){
 			generateResourceManagementPages(c);
@@ -42,6 +43,10 @@ class ManagementPagesGenerator {
 		for (Entity c : definedEntityTypes){
 			generateResourceManagementPages(c);
 		}
+		
+		for (Schedule s : definedScheduleTypes) {
+			generateResourceManagementPages(s);
+		}
 	}
 	
 	private def generateManagementOverview() {
@@ -50,6 +55,7 @@ class ManagementPagesGenerator {
 		var definedCustomerTypes = resource.allContents.toList.filter(Customer);
 		var definedResourceTypes = resource.allContents.toList.filter(org.xtext.example.mydsl.bookingDSL.Resource);
 		var definedEntityTypes = resource.allContents.toList.filter(Entity);
+		var definedScheduleTypes = resource.allContents.toList.filter(Schedule);
 		
 		this.fsa.generateFile(this.managementPagesRoot + "/ResourceOverviewPage.tsx", '''
 		import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from "@material-ui/core";
@@ -123,6 +129,27 @@ class ManagementPagesGenerator {
 			                            <Button onClick={() => history.push("/management/«customer.name»_create")} variant="outlined" color="primary">Create «customer.name»</Button>
                                         <div style={{paddingRight: "10px"}}></div>
                                         <Button onClick={() => history.push("/management/«customer.name»s_overview")} variant="outlined" color="primary">«customer.name»s Overview</Button>
+			                        </div>
+			                    </div>
+			                </AccordionDetails>
+			            </Accordion>	
+    		    	«ENDFOR»
+    		    	«FOR schedule : definedScheduleTypes»
+	    		    	<Accordion>
+			                <AccordionSummary
+			                expandIcon={<ExpandMore/>}
+			                >
+			                    <Typography>«schedule.name»s</Typography>
+			                </AccordionSummary>
+			                <AccordionDetails>
+			                    <div style={{display: "flex", flexDirection: "column"}}>
+			                        <Typography>
+			                            Resource description goes here, manage «schedule.name»s below:
+			                        </Typography>
+			                        <div style={{paddingTop: "20px", display: "flex"}}>
+			                            <Button onClick={() => history.push("/management/«schedule.name»_create")} variant="outlined" color="primary">Create «schedule.name»</Button>
+                                        <div style={{paddingRight: "10px"}}></div>
+                                        <Button onClick={() => history.push("/management/«schedule.name»s_overview")} variant="outlined" color="primary">«schedule.name»s Overview</Button>
 			                        </div>
 			                    </div>
 			                </AccordionDetails>

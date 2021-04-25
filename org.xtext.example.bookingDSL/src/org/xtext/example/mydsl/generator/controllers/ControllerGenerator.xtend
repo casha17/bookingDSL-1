@@ -13,7 +13,7 @@ class ControllerGenerator {
 		
 		for(Declaration dec : declarations){
 			genControllerFile(fsa, resource, systemName, dec.name, dec)
-			for(Member mem : dec.members){
+			/*for(Member mem : dec.members){
 				if(mem instanceof Constraint){
 					print(mem.logic)
 					for(t : mem.logic.eContents){
@@ -25,7 +25,7 @@ class ControllerGenerator {
 					
 					
 				}
-			}
+			}*/
 		}
 	}
 	

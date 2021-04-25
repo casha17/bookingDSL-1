@@ -32,6 +32,8 @@ class ComponentsGenerator {
 		import LoginPage from '../pages/LoginPage';
 		import BookingPage from '../pages/BookingPage';
 		import ResourceOverviewPage from '../pages/management/ResourceOverviewPage';
+		import UserPage from '../pages/UserPage';
+		import BookingOverviewPage from '../pages/BookingOverviewPage';
 		«FOR entity : definedEntityTypes»
 		import «entity.name»sOverviewPage from '../pages/management/«entity.name»/«entity.name»sOverviewPage';
 		import Update«entity.name»Page from '../pages/management/«entity.name»/Update«entity.name»Page';
@@ -79,7 +81,9 @@ class ComponentsGenerator {
 		      	<Route exact path="/management/«schedule.name»_create" component={Create«schedule.name»Page}/>
 		      	«ENDFOR»
 		      	<Route exact path="/management/overview" component={ResourceOverviewPage}/>
-		        <Route exact path="/booking/:id" component={BookingPage}/>
+		        <Route exact path="/booking/:id/:type" component={BookingPage}/>
+		        <Route exact path="/userpage/:id/:type" component={UserPage}/>
+        		<Route exact path="/bookingoverview/:id/:type" component={BookingOverviewPage}/>
         		<Route exact path="/login" component={LoginPage}/>
         		<Redirect to="/login"/>
 		      </Switch>

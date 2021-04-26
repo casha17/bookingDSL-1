@@ -183,14 +183,19 @@ class HandlersGenerator {
 			var result = '''''';
 			
 			if(re.plurality.equals("one")){
-				result = '''model.«re.name».Id = new Guid();
-await _«re.relationType.name»Handler.Create«re.relationType.name»(model.«re.name»);
+				result = '''
+if(model.«re.name».Id.Equals(Guid.NewGuid)){
+      model.«re.name».Id = new Guid();
+      await _«re.relationType.name»Handler.Create«re.relationType.name»(model.«re.name»);
+   }
 				'''
 			}else if(re.plurality.equals("many")){
 				result = '''foreach(var sub in model.«re.name»)
 {
-sub.Id = new Guid();
-await _«re.relationType.name»Handler.Create«re.relationType.name»(sub);
+	if (sub.Id.Equals(Guid.NewGuid())){
+		sub.Id = new Guid();
+		await _«re.relationType.name»Handler.Create«re.relationType.name»(sub);
+	}
 }
 				'''
 			}

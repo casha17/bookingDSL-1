@@ -47,7 +47,7 @@ class ControllerGenerator {
 					}
 				}
 				if(leftConjunction.right !== null){
-					result.add("and")
+					result.add("&&")
 					var prim = leftConjunction.right
 					if(prim.comparison !== null){
 						var comparison = prim.comparison
@@ -60,7 +60,7 @@ class ControllerGenerator {
 				}
 			}
 			if(disjunctionRoot.right !== null){
-				result.add("or")
+				result.add("||")
 				var rightConjunction = disjunctionRoot.right
 				if(rightConjunction.left !== null){
 					var prim = rightConjunction.left
@@ -134,6 +134,24 @@ class ControllerGenerator {
 		}
 	}
 	
+	static def CharSequence addConstraint(Constraint con, String modelName){
+		var constraintParameters = newArrayList
+		
+		writeConstraint(con.logic, constraintParameters, modelName)
+		
+		var constraintString = ""
+		
+		for(p : constraintParameters){
+			constraintString += p + " "
+		}
+		
+		return '''
+		if(!(«constraintString»)) 
+			return BadRequest("Operation failed due to request failing the following constraint: " + 
+									"«constraintString»");
+		'''
+	}
+	
 	//Have to pass name besides resource since not all resources have names (but all controllers will have)
 	private static def void genControllerFile(IFileSystemAccess2 fsa,
 		Resource resource, String systemName, String resourceName, Declaration dec){
@@ -190,6 +208,11 @@ class ControllerGenerator {
 				        [Route("")]
 				        public async Task<ActionResult<Guid>> Create([FromBody]Create«resourceName»RequestModel rm)
 				        {
+				        	«FOR mem : dec.eContents»
+				        	«IF mem instanceof Constraint»
+				        	«addConstraint(mem, "rm")»
+				        	«ENDIF»
+				        	«ENDFOR»
 				        	
 				            var model = _mapper.Map<«resourceName»>(rm);
 				            var result = await _«resourceName»Handler.Create«resourceName»(model);
@@ -204,6 +227,12 @@ class ControllerGenerator {
 				        [Route("")]
 				        public async Task<ActionResult<«resourceName»>> Put([FromBody] Update«resourceName»RequestModel rm)
 				        {
+				        	«FOR mem : dec.eContents»
+				        	«IF mem instanceof Constraint»
+				        	«addConstraint(mem, "rm")»
+				        	«ENDIF»
+				        	«ENDFOR»
+				        	
 				        	var model = _mapper.Map<«resourceName»>(rm);
 				        	var result = await _«resourceName»Handler.Update(model);
 				        	

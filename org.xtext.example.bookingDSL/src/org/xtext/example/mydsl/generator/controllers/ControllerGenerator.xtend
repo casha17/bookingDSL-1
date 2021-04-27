@@ -16,18 +16,21 @@ class ControllerGenerator {
 		
 		for(Declaration dec : declarations){
 			genControllerFile(fsa, resource, systemName, dec.name, dec)
-			/*for(Member mem : dec.members){
+			for(Member mem : dec.members){
 				if(mem instanceof Constraint){
 					if(mem.logic !== null){
 						var parameters = newArrayList
-						writeConstraint(mem.logic, parameters)
+						writeConstraint(mem.logic, parameters, dec.name)
+						for(p : parameters){
+							print(p + " ")
+						}
 					}
 				}
-			}*/
+			}
 		}
 	}
 	
-	static def void writeConstraint(Logic log, ArrayList result){
+	static def void writeConstraint(Logic log, ArrayList result, String declarationName){
 		if(log.disjunction !== null){
 			var disjunctionRoot = log.disjunction
 			if(disjunctionRoot.left !== null){
@@ -36,11 +39,11 @@ class ControllerGenerator {
 					var prim = leftConjunction.left
 					if(prim.comparison !== null){
 						var comparison = prim.comparison
-						comparison.computeVoid(result)
+						comparison.computeVoid(result, declarationName)
 					}
 					if(prim.logic !== null){
 						var leafLogic = prim.logic
-						leafLogic.writeConstraint(result)
+						leafLogic.writeConstraint(result, declarationName)
 					}
 				}
 				if(leftConjunction.right !== null){
@@ -48,11 +51,11 @@ class ControllerGenerator {
 					var prim = leftConjunction.right
 					if(prim.comparison !== null){
 						var comparison = prim.comparison
-						comparison.computeVoid(result)
+						comparison.computeVoid(result, declarationName)
 					}
 					if(prim.logic !== null){
 						var leafLogic = prim.logic
-						leafLogic.writeConstraint(result)
+						leafLogic.writeConstraint(result, declarationName)
 					}
 				}
 			}
@@ -63,11 +66,11 @@ class ControllerGenerator {
 					var prim = rightConjunction.left
 					if(prim.comparison !== null){
 						var comparison = prim.comparison
-						comparison.computeVoid(result)
+						comparison.computeVoid(result, declarationName)
 					}
 					if(prim.logic !== null){
 						var leafLogic = prim.logic
-						leafLogic.writeConstraint(result)
+						leafLogic.writeConstraint(result, declarationName)
 					}
 				}
 				if(rightConjunction.right !== null){
@@ -76,56 +79,56 @@ class ControllerGenerator {
 					result.add("and")
 					if(prim.comparison !== null){
 						var comparison = prim.comparison
-						comparison.computeVoid(result)
+						comparison.computeVoid(result, declarationName)
 					}
 					if(prim.logic !== null){
 						var leafLogic = prim.logic
-						leafLogic.writeConstraint(result)
+						leafLogic.writeConstraint(result, declarationName)
 					}
 				}
 			}
 		}
 	}
 	
-	def static void computeVoid(Comparison comp, ArrayList result){
+	def static void computeVoid(Comparison comp, ArrayList result, String declarationName){
 		if(comp.left !== null){
-			comp.left.computeExpVoid(result)
+			comp.left.computeExpVoid(result, declarationName)
 		}
 		if(comp.operator !== null){
 			result.add(comp.operator)
 		}
 		if(comp.right !== null){
-			comp.right.computeExpVoid(result)
+			comp.right.computeExpVoid(result, declarationName)
 		}
 	}
 	
-	def static void computeExpVoid(Expression exp, ArrayList result){
+	def static void computeExpVoid(Expression exp, ArrayList result, String declarationName){
 		switch exp{
 			Plus: {
-				exp.left.computeExpVoid(result)
+				exp.left.computeExpVoid(result, declarationName)
 				result.add("+")
-				exp.right.computeExpVoid(result)
+				exp.right.computeExpVoid(result, declarationName)
 			}
 			Minus:{ 
-				exp.left.computeExpVoid(result)
+				exp.left.computeExpVoid(result, declarationName)
 				result.add("-")
-				exp.right.computeExpVoid(result) 
+				exp.right.computeExpVoid(result, declarationName) 
 			}
 			Mult:{ 
-				exp.left.computeExpVoid(result)
+				exp.left.computeExpVoid(result, declarationName)
 				result.add("*")
-				exp.right.computeExpVoid(result)
+				exp.right.computeExpVoid(result, declarationName)
 				}
 			Div: {
-				exp.left.computeExpVoid(result)
+				exp.left.computeExpVoid(result, declarationName)
 				result.add("/")
-				exp.right.computeExpVoid(result)
+				exp.right.computeExpVoid(result, declarationName)
 			}
 			Number:{
 				result.add(exp.value)
 			}
 			Var:{ 
-				result.add(exp.name.name)
+				result.add(declarationName + "." + exp.name.name)
 			}
 			default: throw new Exception("Error")
 		}
@@ -187,6 +190,7 @@ class ControllerGenerator {
 				        [Route("")]
 				        public async Task<ActionResult<Guid>> Create([FromBody]Create«resourceName»RequestModel rm)
 				        {
+				        	
 				            var model = _mapper.Map<«resourceName»>(rm);
 				            var result = await _«resourceName»Handler.Create«resourceName»(model);
 				            

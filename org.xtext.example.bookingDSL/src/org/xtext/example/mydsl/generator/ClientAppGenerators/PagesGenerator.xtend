@@ -8,6 +8,7 @@ import java.util.ArrayList
 import org.xtext.example.mydsl.bookingDSL.Booking
 import org.xtext.example.mydsl.bookingDSL.Schedule
 import org.xtext.example.mydsl.bookingDSL.Relation
+import org.xtext.example.mydsl.bookingDSL.Attribute
 
 class PagesGenerator {
 	
@@ -54,7 +55,7 @@ class PagesGenerator {
 	        const [selectedType, setSelectedType] = useState<string>("");
 	    
 	        «FOR cus: customers»
-    		const [«cus.name»Result, set«cus.name»Result] = useState<string[]>([]);
+    		const [«cus.name»Result, set«cus.name»Result] = useState<«cus.name»[]>([]);
     		«ENDFOR»
 		
 		    useMount(() => {
@@ -71,7 +72,7 @@ class PagesGenerator {
 	    
 	            if(«joinCustomers(customers)») {
 	    			«FOR cus: customers»
-	    			set«cus.name»Result(«cus.name»Result.data.map(e => e.id));
+	    			set«cus.name»Result(«cus.name»Result.data);
 		    		«ENDFOR»
 	            } else {
 	                setError("Fetching customers failed");
@@ -99,7 +100,7 @@ class PagesGenerator {
 								setSelectedType("«cus.name»")
 							}}>
 							{«cus.name»Result.map((ele, key) => {
-								return <MenuItem key={key} value={ele}>{ele}</MenuItem>
+								return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(cus)»}</MenuItem>
 							})}
 	                    	</Select>
 	                    </FormControl>
@@ -141,6 +142,20 @@ class PagesGenerator {
 		export default LoginPage;
 		''')
 	}
+	
+	private def getDisplayAttribute(Customer customer) {
+		
+		var customerMembers = customer.members
+		
+		for(mem : customerMembers) {
+			if(mem instanceof Attribute) {
+				if(mem.name == "name") {
+					return "name";
+				}
+			}	
+		}
+		return "id";
+	}	
 	
 	def joinCustomers(List<Customer> customers) {
 		var customersString = new ArrayList<String>();
@@ -378,7 +393,7 @@ class PagesGenerator {
 		                                    <InputLabel id="demo-simple-select-outlined-label">«getBookingResourceDeclaration(booking).name»</InputLabel>
 		                                    <Select variant="outlined" value={selected«booking.name»Resource} label={"«getBookingResourceDeclaration(booking).name»"} onChange={change => setSelected«booking.name»Resource(change.target.value as string)}>
 		                                    {«booking.name»Resource.map((ele, key) => {
-		                                        return <MenuItem key={key} value={ele.id}>{ele.id}</MenuItem>
+		                                        return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(getBookingResourceDeclaration(booking) as org.xtext.example.mydsl.bookingDSL.Resource)»}</MenuItem>
 		                                    })}
 		                                    </Select>
 		                                </FormControl>
@@ -390,7 +405,7 @@ class PagesGenerator {
 		                                            <InputLabel id="demo-simple-select-outlined-label">«getBookingScheduleDeclaration(booking).name»</InputLabel>
 		                                            <Select variant="outlined" value={selected«booking.name»ResourceSchedule} label={"«getBookingScheduleDeclaration(booking).name»"} onChange={change => setSelected«booking.name»ResourceSchedule(change.target.value as string)}>
 		                                            {«booking.name»Resource.filter(e => e.id === selected«booking.name»Resource)[0]?.schedules?.map((ele, key) => {
-														return <MenuItem key={key} value={ele.id}>{ele.id}</MenuItem>
+														return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(getBookingScheduleDeclaration(booking) as Schedule)»}</MenuItem>
 													})}
 		                                            </Select>
 		                                        </FormControl>
@@ -420,6 +435,34 @@ class PagesGenerator {
 		export default BookingPage;
 		''')
 	}
+	
+	private def getDisplayAttribute(Schedule schedule) {
+		
+		var relationTypeMembers =schedule.members
+		
+		for(mem : relationTypeMembers) {
+			if(mem instanceof Attribute) {
+				if(mem.name == "name" && mem.type.literal == "string") {
+					return "name";
+				}
+			}	
+		}
+		return "id";
+	}
+	
+	private def getDisplayAttribute(org.xtext.example.mydsl.bookingDSL.Resource resource) {
+		
+		var relationTypeMembers = resource.members
+		
+		for(mem : relationTypeMembers) {
+			if(mem instanceof Attribute) {
+				if(mem.name == "name" && mem.type.literal == "string") {
+					return "name";
+				}
+			}	
+		}
+		return "id";
+	}	
 	
 	def generateUserPage() {
 		this.fsa.generateFile(this.pagesRoot + "/UserPage.tsx", '''

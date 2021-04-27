@@ -184,7 +184,7 @@ class HandlersGenerator {
 			
 			if(re.plurality.equals("one")){
 				result = '''
-if(model.«re.name».Id.Equals(Guid.NewGuid)){
+if(model.«re.name».Id.Equals(Guid.NewGuid())){
       model.«re.name».Id = new Guid();
       await _«re.relationType.name»Handler.Create«re.relationType.name»(model.«re.name»);
    }

@@ -493,7 +493,7 @@ class ManagementPagesGenerator {
 	        					<InputLabel id="demo-simple-select-outlined-label">«mem.name»</InputLabel>
 	        					<Select variant="outlined" value={''} label={"«mem.name»"} onChange={(value) => update«mem.name»(«mem.name»Result.filter(e => e.id === value.target.value as string)[0], true)}>
 									{«mem.name»Result.filter(f => !«mem.name».map(e => e.id).includes(f.id)).map((ele, key) => {
-										return <MenuItem key={key} value={ele.id}>{ele.id}</MenuItem>
+										return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(mem)»}</MenuItem>
 									})}
 								</Select>
 								</FormControl>
@@ -503,7 +503,7 @@ class ManagementPagesGenerator {
 	        					<InputLabel id="demo-simple-select-outlined-label">«mem.name»</InputLabel>
 	        					<Select variant="outlined" label={"«mem.name»"} value={«mem.name» ? «mem.name».id : undefined} onChange={(event) => set«mem.name»(«mem.name»Result.filter(e => e.id === event.target.value as string)[0])}>
 									{«mem.name»Result.map((ele, key) => {
-										return <MenuItem key={key} value={ele.id}>{ele.id}</MenuItem>
+										return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(mem)»}</MenuItem>
 									})}
 								</Select>
 								</FormControl>
@@ -708,7 +708,7 @@ class ManagementPagesGenerator {
 	        					<InputLabel id="demo-simple-select-outlined-label">«mem.name»</InputLabel>
 	        					<Select variant="outlined" value={''} label={"«mem.name»"} onChange={(value) => update«mem.name»(«mem.name»Result.filter(e => e.id === value.target.value as string)[0], true)}>
 									{«mem.name»Result.filter(f => !«mem.name».map(e => e.id).includes(f.id)).map((ele, key) => {
-										return <MenuItem key={key} value={ele.id}>{ele.id}</MenuItem>
+										return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(mem)»}</MenuItem>
 									})}
 								</Select>
 								</FormControl>
@@ -718,7 +718,7 @@ class ManagementPagesGenerator {
 	        					<InputLabel id="demo-simple-select-outlined-label">«mem.name»</InputLabel>
 	        					<Select variant="outlined" label={"«mem.name»"} value={«mem.name» ? «mem.name».id : undefined} onChange={(event) => set«mem.name»(«mem.name»Result.filter(e => e.id === event.target.value as string)[0])}>
 									{«mem.name»Result.map((ele, key) => {
-										return <MenuItem key={key} value={ele.id}>{ele.id}</MenuItem>
+										return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(mem)»}</MenuItem>
 									})}
 								</Select>
 								</FormControl>
@@ -848,5 +848,19 @@ class ManagementPagesGenerator {
 			}
 		}
 		return false;
+	}
+	
+	private def getDisplayAttribute(Relation relation) {
+		
+		var relationTypeMembers = relation.relationType.members
+		
+		for(mem : relationTypeMembers) {
+			if(mem instanceof Attribute) {
+				if(mem.name == "name" && mem.type.literal == "string") {
+					return "name";
+				}
+			}	
+		}
+		return "id";
 	}	
 }

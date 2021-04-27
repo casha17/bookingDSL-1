@@ -3,6 +3,9 @@ package org.xtext.example.mydsl.generator.controllers
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.emf.ecore.resource.Resource
 import org.xtext.example.mydsl.bookingDSL.*;
+import java.util.Map
+import java.util.HashMap
+import java.util.ArrayList
 
 class ControllerGenerator {
 	static def void generateControllers(IFileSystemAccess2 fsa,
@@ -15,29 +18,116 @@ class ControllerGenerator {
 			genControllerFile(fsa, resource, systemName, dec.name, dec)
 			/*for(Member mem : dec.members){
 				if(mem instanceof Constraint){
-					print(mem.logic)
-					for(t : mem.logic.eContents){
-						print(t)
+					if(mem.logic !== null){
+						var parameters = newArrayList
+						writeConstraint(mem.logic, parameters)
 					}
-					print("\n left left: " + mem.logic.disjunction.left.left.comparison.operator + "\n")
-					print("\n left left: " + mem.logic.disjunction.left.left.comparison + "\n")
-					print("left right: " + mem.logic.disjunction.left.right.comparison)
-					
-					
 				}
 			}*/
 		}
 	}
 	
-	static def void test(Logic log){
-		var dis = log.disjunction
-		var leftCon = dis.left
-		var prim = leftCon.left
-		if(prim.comparison !== null){
-			var expres = prim.comparison.left
+	static def void writeConstraint(Logic log, ArrayList result){
+		if(log.disjunction !== null){
+			var disjunctionRoot = log.disjunction
+			if(disjunctionRoot.left !== null){
+				var leftConjunction = disjunctionRoot.left
+				if(leftConjunction.left !== null){
+					var prim = leftConjunction.left
+					if(prim.comparison !== null){
+						var comparison = prim.comparison
+						comparison.computeVoid(result)
+					}
+					if(prim.logic !== null){
+						var leafLogic = prim.logic
+						leafLogic.writeConstraint(result)
+					}
+				}
+				if(leftConjunction.right !== null){
+					result.add("and")
+					var prim = leftConjunction.right
+					if(prim.comparison !== null){
+						var comparison = prim.comparison
+						comparison.computeVoid(result)
+					}
+					if(prim.logic !== null){
+						var leafLogic = prim.logic
+						leafLogic.writeConstraint(result)
+					}
+				}
+			}
+			if(disjunctionRoot.right !== null){
+				result.add("or")
+				var rightConjunction = disjunctionRoot.right
+				if(rightConjunction.left !== null){
+					var prim = rightConjunction.left
+					if(prim.comparison !== null){
+						var comparison = prim.comparison
+						comparison.computeVoid(result)
+					}
+					if(prim.logic !== null){
+						var leafLogic = prim.logic
+						leafLogic.writeConstraint(result)
+					}
+				}
+				if(rightConjunction.right !== null){
+					var prim = rightConjunction.right
+					print(" and ")
+					result.add("and")
+					if(prim.comparison !== null){
+						var comparison = prim.comparison
+						comparison.computeVoid(result)
+					}
+					if(prim.logic !== null){
+						var leafLogic = prim.logic
+						leafLogic.writeConstraint(result)
+					}
+				}
+			}
 		}
-		if(prim.logic !== null){
-			
+	}
+	
+	def static void computeVoid(Comparison comp, ArrayList result){
+		if(comp.left !== null){
+			comp.left.computeExpVoid(result)
+		}
+		if(comp.operator !== null){
+			result.add(comp.operator)
+		}
+		if(comp.right !== null){
+			comp.right.computeExpVoid(result)
+		}
+	}
+	
+	def static void computeExpVoid(Expression exp, ArrayList result){
+		switch exp{
+			Plus: {
+				exp.left.computeExpVoid(result)
+				result.add("+")
+				exp.right.computeExpVoid(result)
+			}
+			Minus:{ 
+				exp.left.computeExpVoid(result)
+				result.add("-")
+				exp.right.computeExpVoid(result) 
+			}
+			Mult:{ 
+				exp.left.computeExpVoid(result)
+				result.add("*")
+				exp.right.computeExpVoid(result)
+				}
+			Div: {
+				exp.left.computeExpVoid(result)
+				result.add("/")
+				exp.right.computeExpVoid(result)
+			}
+			Number:{
+				result.add(exp.value)
+			}
+			Var:{ 
+				result.add(exp.name.name)
+			}
+			default: throw new Exception("Error")
 		}
 	}
 	

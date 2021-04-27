@@ -111,7 +111,7 @@ Conjunction:
 ;
 
 PrimitiveLogic:
-	comparison=Comparison | externalCall=ExternalCall | '(' logic=Logic ')'
+	comparison=Comparison | '(' logic=Logic ')'
 ;
 
 ExternalCall:
@@ -127,15 +127,16 @@ CompareOperator:
 ;
 
 Expression:
-	leftFactor=Factor (('+' {Plus.left=current} | '-' {Minus.left=current}) rightFactor=Factor)*
+	Factor (('+' {Plus.left=current} | '-' {Minus.left=current}) right=Factor)*
 ;
 
+
 Factor:
-	leftPrimitiveExpression=PrimitiveExpression (('*' {Mult.left=current} | '/' {Div.left=current}) rightPrimitiveExpression=PrimitiveExpression)*
+	PrimitiveExpression (('*' {Mult.left=current} | '/' {Div.left=current}) right=PrimitiveExpression)*
 ;
 
 PrimitiveExpression:
-	var=Var | number=Number
+	Var | Number
 ;
 
 Var:

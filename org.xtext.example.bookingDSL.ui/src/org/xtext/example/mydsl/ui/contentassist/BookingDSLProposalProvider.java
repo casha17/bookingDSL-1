@@ -3,10 +3,26 @@
  */
 package org.xtext.example.mydsl.ui.contentassist;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.xtext.Assignment;
+import org.eclipse.xtext.RuleCall;
+import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext;
+import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor;
+
+import com.google.inject.Inject;
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/310_eclipse_support.html#content-assist
  * on how to customize the content assistant.
+ * @param <extension>
  */
-public class BookingDSLProposalProvider extends AbstractBookingDSLProposalProvider {
+public class BookingDSLProposalProvider<extension> extends AbstractBookingDSLProposalProvider {
+	
+	
+	public void complete_Customer(EObject model, RuleCall ruleCall, ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+		// subclasses may override
+		
+		lookupCrossReference(((RuleCall)assignment.getTerminal()), context, acceptor);
+	}
+	
 }

@@ -197,6 +197,47 @@ class PagesGenerator {
 		}
 	}
 	
+	private def getBookingCustomerName(Booking booking) {
+		for(member : booking.members) {
+			if(member instanceof Relation) {
+				if(member.relationType instanceof Customer) {
+					return member.name;
+				}
+			}
+		}
+	}
+	
+	private def getBookingResourceName(Booking booking) {
+		for(member : booking.members) {
+			if(member instanceof Relation) {
+				if(member.relationType instanceof org.xtext.example.mydsl.bookingDSL.Resource) {
+					println(member.name)
+					return member.name;
+				}
+			}
+		}
+	}
+	
+	private def getBookingResourceType(Booking booking) {
+		for(member : booking.members) {
+			if(member instanceof Relation) {
+				if(member.relationType instanceof org.xtext.example.mydsl.bookingDSL.Resource) {
+					return member.relationType;
+				}
+			}
+		}
+	}
+	
+	private def getBookingScheduleName(Booking booking) {
+		for(member : booking.members) {
+			if(member instanceof Relation) {
+				if(member.relationType instanceof Schedule) {
+					return member.name;
+				}
+			}
+		}
+	}
+	
 	private def getUniqueResourceImport(List<Booking> bookings) {
 		var list = new ArrayList<String>();
 		for(booking: bookings) {
@@ -335,9 +376,11 @@ class PagesGenerator {
 	            setSubmitting«booking.name»Error(undefined)
 	    
 	            var result = await httpPost<Create«booking.name»RequestModel>("/«booking.name»", {
-	                seat: «booking.name»Resource.filter(e => e.id === selected«booking.name»Resource)[0],
-	                seatSchedule: «booking.name»ResourceSchedules.filter(e => e.id === selected«booking.name»ResourceSchedule)[0],
-	                cust: user«getBookingCustomerType(booking).name»
+	            	«getBookingResourceName(booking)»: «booking.name»Resource.filter(e => e.id === selected«booking.name»Resource)[0],
+	            	«getBookingScheduleName(booking)»: «booking.name»ResourceSchedules.filter(e => e.id === selected«booking.name»ResourceSchedule)[0],
+	                «getBookingCustomerName(booking)»: user«getBookingCustomerType(booking).name»
+	          
+	              
 	            } as Create«booking.name»RequestModel)
 	    
 	            if(result.isSuccess) {
@@ -404,7 +447,7 @@ class PagesGenerator {
 		                                        : <FormControl style={{width: "100%"}} variant="outlined">
 		                                            <InputLabel id="demo-simple-select-outlined-label">«getBookingScheduleDeclaration(booking).name»</InputLabel>
 		                                            <Select variant="outlined" value={selected«booking.name»ResourceSchedule} label={"«getBookingScheduleDeclaration(booking).name»"} onChange={change => setSelected«booking.name»ResourceSchedule(change.target.value as string)}>
-		                                            {«booking.name»Resource.filter(e => e.id === selected«booking.name»Resource)[0]?.schedules?.map((ele, key) => {
+		                                            {«booking.name»Resource.filter(e => e.id === selected«booking.name»Resource)[0]?.«getBookingResourceType(booking).members.filter(Relation).get(0).name»?.map((ele, key) => {
 														return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(getBookingScheduleDeclaration(booking) as Schedule)»}</MenuItem>
 													})}
 		                                            </Select>

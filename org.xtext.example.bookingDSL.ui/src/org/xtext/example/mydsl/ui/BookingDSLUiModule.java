@@ -4,6 +4,8 @@
 package org.xtext.example.mydsl.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.xtext.documentation.IEObjectDocumentationProvider;
+import org.eclipse.xtext.ui.editor.hover.IEObjectHoverProvider;
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -13,4 +15,12 @@ public class BookingDSLUiModule extends AbstractBookingDSLUiModule {
 	public BookingDSLUiModule(AbstractUIPlugin plugin) {
 		super(plugin);
 	}
+	
+	public Class<? extends IEObjectHoverProvider> bindIEObjectHoverProvider() {
+        return BookingDSLHoverProvider.class;
+    }
+ 
+    public Class<? extends IEObjectDocumentationProvider> bindIEObjectDocumentationProviderr() {
+        return BookingDSLEObjectDocumentationProvider.class;
+    }
 }

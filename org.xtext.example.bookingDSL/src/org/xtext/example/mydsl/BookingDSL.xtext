@@ -40,6 +40,7 @@ Declaration:
 Customer:
 	'customer' name=ID ('extends' superType=[Customer])? '{'
 		members += Member*
+		constraints += Constraint*
 	'}'
 ;
 
@@ -48,6 +49,7 @@ Customer:
 Resource:
 	'resource' name=ID ('extends' superType=[Resource])? '{'
 		members += Member*
+		constraints += Constraint*
 	'}'
 ;
 
@@ -55,6 +57,7 @@ Resource:
 Entity:
 	'entity' name=ID '{'
 		members += Member*
+		constraints += Constraint*
 	'}'
 ;
 
@@ -62,6 +65,7 @@ Entity:
 Schedule:
 	'schedule' name=ID '{'
 		members += Member*
+		constraints += Constraint*
 	'}'
 ;
 
@@ -69,11 +73,12 @@ Schedule:
 Booking:
 	'booking' name=ID '{'
 		members += Member*
+		constraints += Constraint*
 	'}'
 ;
 
 Member:
-	Attribute | Relation | Constraint
+	Attribute | Relation  
 ;
 
 // Attributes are declared name first, then type and optionally that type can be an array.

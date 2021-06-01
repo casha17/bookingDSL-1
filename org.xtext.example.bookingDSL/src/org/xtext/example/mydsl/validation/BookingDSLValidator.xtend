@@ -16,6 +16,11 @@ import org.xtext.example.mydsl.bookingDSL.Customer
 import org.xtext.example.mydsl.bookingDSL.Resource
 import java.util.HashSet
 import org.eclipse.emf.common.util.EList
+import org.xtext.example.mydsl.bookingDSL.Schedule
+import org.xtext.example.mydsl.bookingDSL.Entity
+import org.eclipse.xtext.validation.ValidationMessageAcceptor
+import org.eclipse.xtext.validation.IssueCodes
+import java.util.List
 
 /** 
  * This class contains custom validation rules. 
@@ -24,42 +29,45 @@ import org.eclipse.emf.common.util.EList
 class BookingDSLValidator extends AbstractBookingDSLValidator {
 	
 	
+	// Validator ensures that "System" starts with an uppercase letter
 	@Check 
 	def void SystemMustStartWithUppercase(org.xtext.example.mydsl.bookingDSL.System modelSystem) {
 		var  isUpperCase = VerifyForUppercase(modelSystem.getName().charAt(0))
 		if (!isUpperCase) {
-			error("System has to start with an uppercase", BookingDSLPackage::eINSTANCE.getSystem().getEIDAttribute())
+			error("System has to start with an uppercase", BookingDSLPackage::eINSTANCE.system_Name )
 		}
 	}
-
+	
+	// validator ensures that all declerations starts with an uppercase. 
 	@Check 
 	def void DeclerationMustStartWithUppercase(Declaration decleration) {
 		var isUpperCase = Character::isUpperCase(decleration.getName().charAt(0))
 		if (!isUpperCase) {
-			error("Declarations has to start with an uppercase", BookingDSLPackage::eINSTANCE.getBaseDeclaration_Name())
+			error("Declarations has to start with an uppercase", BookingDSLPackage::eINSTANCE.baseDeclaration_Name  )
 		}
 	}
 	
-	
+	// validation Booking must not have a relation to booking
 	@Check
 	def void BookingMustNotHaveRelationToBooking(Booking booking) {
 		
 		for (Member mem : booking.members) {
 			if (mem instanceof Relation) {
 				if (mem.relationType instanceof Booking) {
-					error("Booking cannot have a relation to another booking" , null)
+					error("Booking cannot have a relation to another booking" , BookingDSLPackage::eINSTANCE.baseDeclaration_Name)
 				}
 			}
 		}
 	}
 	
 	
+	// Validation no cyclic relations
 	@Check 
 	def void checkNoCyclic(Declaration declaration) {
 		val seen = new HashSet<Declaration>
 		
 		if (declaration.CheckForCyclic(seen)) {
-								error("Booking cannot have a relation to another booking" , null)
+								error("Declaration cannot have cyclic dependencies" , BookingDSLPackage::eINSTANCE.baseDeclaration_Name)
 		}
 		
 	}
@@ -87,29 +95,106 @@ class BookingDSLValidator extends AbstractBookingDSLValidator {
 		}
 		
 		
+	// Check if super type already have attribute	
+	// needs recursion
 	@Check 
 	def void CheckIfSupertypeAlreadyHaveAttribute(Declaration decleration) {
-		
+		var seen = new HashSet<Declaration>
 		switch decleration{
 			Customer : {
-				val superAttributes = decleration.superType.members.filter(Attribute)
-				val attributes = decleration.members.filter(Attribute)
-				for (Attribute s : superAttributes) {
-					for (Attribute a : attributes) {
-						if (s.name == a.name && s.name != "name") {
-							warning("Supertype already contains this attribute" , null)
-						}
-					}
-				}
-				
+				val delcartionNameAttributes = decleration.members.map[e| e.name]
+				seen.add(decleration)
+				CheckSuperTypeCus(decleration , seen , delcartionNameAttributes);
+			}
+			Resource : {
+				val delcartionNameAttributes = decleration.members.map[e| e.name]
+				seen.add(decleration)
+				CheckSuperTypeRes(decleration , seen , delcartionNameAttributes);
 			}
 		}
 	}
 		
-		def Check(Declaration decleration) {
+		def CheckSuperTypeCus(Customer customer, HashSet<Declaration> declarations, List<String> strings) {
+			if (customer.superType !== null) {
+				val supertypeAttributes = customer.superType.members.filter(Attribute);
+				for (Attribute att : supertypeAttributes) {
+					for(String name : strings ) {
+						if(att.name !== null) {
+							if(att.name.equals(name)) {
+							warning('''The attribute already exists in supertype''' , BookingDSLPackage::eINSTANCE.baseDeclaration_Name)
+						}
+						}
+						
+					}
+				}
+				
+			}
 			
+			if(declarations.contains(customer.superType)) {
+				return null
+			}else {
+				declarations.add(customer.superType)
+				CheckSuperTypeCus(customer.superType , declarations , strings)
+			}
+			return null
+		}
+		
+		def CheckSuperTypeRes(Resource resource, HashSet<Declaration> declarations, List<String> strings) {
+			if (resource.superType !== null) {
+				val supertypeAttributes = resource.superType.members.filter(Attribute);
+				for (Attribute att : supertypeAttributes) {
+					for(String name : strings ) {
+						if(att.name.equals(name)) {
+							warning('''The attribute already exists in supertype''' , BookingDSLPackage::eINSTANCE.baseDeclaration_Name)						}
+					}
+				}
+				
+			}
+			
+			if(declarations.contains(resource.superType)) {
+				return null
+			}else {
+				declarations.add(resource.superType)
+				CheckSuperTypeRes(resource.superType , declarations , strings)
+			}
+			return null
 		}
 	
+
+	
+		
+	
+
+	@Check 
+	def void OnlyResourceAndSchedulesCanOwnBookings(Declaration decleration) {
+		
+		
+		if (decleration instanceof Entity) {
+			if (DeclerationHaveSchedule(decleration)) {
+				error("Cannot own Schedule" , null)
+			}
+		}else if (decleration instanceof Customer) {
+			if (DeclerationHaveSchedule(decleration)) {
+				error("Cannot own Schedule" , null)
+			}
+		}
+	
+	}
+	
+	def boolean DeclerationHaveSchedule(Declaration decleration) {
+		var relations = decleration.members.filter(Relation);
+		if (relations.isEmpty) {
+			return false
+		}
+		
+		for (Relation rel : relations) {
+			if (rel.relationType instanceof Schedule) {
+				return true
+			}
+		}
+		
+	}
+	// customer cannot have a relation to resource
 	@Check 
 	def void CustomerNoRelationToResource(Customer customer) {
 		
@@ -120,31 +205,66 @@ class BookingDSLValidator extends AbstractBookingDSLValidator {
 		}
 		
 	}
+	
+	@Check
+	def void BookingMustHaveThreeRelations(Booking booking) {
+  		var bookingsRelations = booking.members.filter(Relation)
+		if (BookingsInsufficentRelations(bookingsRelations)) {
+				error("Booking must have a has one relation to a resource, customer and schedule", BookingDSLPackage::eINSTANCE.baseDeclaration_Name  )
+		}
+	}
 
+	private def BookingsInsufficentRelations(Iterable<Relation> relations) {
+		if (relations.size == 0) {
+			return true
+		}
+		
+		var count = 0;
+		
+		for (Relation rel : relations) {
+			if((rel.relationType instanceof Resource && rel.plurality == 'one') || (rel.relationType instanceof Schedule && rel.plurality == 'one') || (rel.relationType instanceof Customer && rel.plurality == 'one')) {
+				count++;
+			}
+		}
+		
+		if (count == 3) {
+			return false
+		}
+		return true
+	}
+	
+	
+	//@Check
+	//def void ConstaintCanOnlyPoint
 
 	@Check 
 	def void warnIfNoDisplayName(Declaration declaration) {
 		if (declaration instanceof Booking) {
 			return;
 		}
-		var hasName = false
-		var members = declaration.getMembers()
-		for (var int i = 0; i < members.size(); i++) {
-			var member = members.get(i)
-			if (member instanceof Attribute) {
-				var attriName = ((member as Attribute)).getName()
-				if (attriName.equals("name")) {
-					hasName = true
+		
+		val attributes = declaration.members.filter(Attribute);
+		for(Attribute att :attributes) {
+			if(att.name.equals("name")) {
+				
+			}else {
+				if (checkSuper(declaration)) {
+					warning("test" , null)
 				}
 			}
 		}
-		if (!hasName) {
-			// Return warning that there are no name attribute
-			warning("This declaration has no name", BookingDSLPackage::eINSTANCE.getBaseDeclaration_Name())
-			return;
-		}
 	}
 
+	def boolean checkSuper(Declaration declaration) {
+		if(declaration instanceof Customer) {
+			if(declaration.superType !== null) {
+				return true
+			}else {
+				return false
+			}
+		}
+		false
+	}
 	@Check 
 	def void errorIfDisplayNameIsNotString(Attribute attri) {
 		var attriName = attri.getName()
@@ -152,7 +272,7 @@ class BookingDSLValidator extends AbstractBookingDSLValidator {
 			var attriType = attri.getType().getLiteral()
 			if (!attriType.equals("string")) {
 				error("Attribute of type name can only be of type string",
-					BookingDSLPackage::eINSTANCE.getAttribute_Name())
+					null)
 				return;
 			}
 		}

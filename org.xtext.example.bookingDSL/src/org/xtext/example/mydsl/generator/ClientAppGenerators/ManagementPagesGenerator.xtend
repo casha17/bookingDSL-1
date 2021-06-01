@@ -11,6 +11,8 @@ import org.xtext.example.mydsl.bookingDSL.Schedule
 import org.xtext.example.mydsl.bookingDSL.Booking
 import java.util.List
 import java.util.ArrayList
+import org.xtext.example.mydsl.bookingDSL.Constraint
+import org.xtext.example.mydsl.bookingDSL.Member
 
 class ManagementPagesGenerator {
 	
@@ -52,10 +54,7 @@ class ManagementPagesGenerator {
 	private def generateManagementOverview() {
 		
 		// Find all customer types, 
-		var definedCustomerTypes = resource.allContents.toList.filter(Customer);
-		var definedResourceTypes = resource.allContents.toList.filter(org.xtext.example.mydsl.bookingDSL.Resource);
-		var definedEntityTypes = resource.allContents.toList.filter(Entity);
-		var definedScheduleTypes = resource.allContents.toList.filter(Schedule);
+		var managementDeclarations = resource.allContents.toList.filter(Declaration).filter(dec| dec instanceof Booking == false);
 		
 		this.fsa.generateFile(this.managementPagesRoot + "/ResourceOverviewPage.tsx", '''
 		import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from "@material-ui/core";
@@ -71,90 +70,10 @@ class ManagementPagesGenerator {
 		
 		        return <div style={{display: "flex", width: "100%", justifyContent: "center", flexDirection: "column", padding: "20px"}}>
 		            <Typography style={{textAlign: "center", width: "100%"}} variant="h2">System Resources</Typography>
-		            «FOR entity : definedEntityTypes»
-    		    		<Accordion>
-    		                <AccordionSummary
-    		                expandIcon={<ExpandMore/>}
-    		                >
-    		                    <Typography>«entity.name»s</Typography>
-    		                </AccordionSummary>
-    		                <AccordionDetails>
-    		                    <div style={{display: "flex", flexDirection: "column"}}>
-    		                        <Typography>
-    		                            Resource description goes here, manage «entity.name»s below:
-    		                        </Typography>
-    		                        <div style={{paddingTop: "20px", display: "flex"}}>
-    		                            <Button onClick={() => history.push("/management/«entity.name»_create")} variant="outlined" color="primary">Create «entity.name»</Button>
-                                        <div style={{paddingRight: "10px"}}></div>
-                                        <Button onClick={() => history.push("/management/«entity.name»s_overview")} variant="outlined" color="primary">«entity.name»s Overview</Button>
-    		                        </div>
-    		                    </div>
-    		                </AccordionDetails>
-    		            </Accordion>
-    		    	«ENDFOR»
-    		    	«FOR resource : definedResourceTypes»
-    		    	 	<Accordion>
-    		                <AccordionSummary
-    		                expandIcon={<ExpandMore/>}
-    		                >
-    		                    <Typography>«resource.name»s</Typography>
-    		                </AccordionSummary>
-    		                <AccordionDetails>
-    		                    <div style={{display: "flex", flexDirection: "column"}}>
-    		                        <Typography>
-    		                            Resource description goes here, manage «resource.name»s below:
-    		                        </Typography>
-    		                        <div style={{paddingTop: "20px", display: "flex"}}>
-    		                            <Button onClick={() => history.push("/management/«resource.name»_create")} variant="outlined" color="primary">Create «resource.name»</Button>
-                                        <div style={{paddingRight: "10px"}}></div>
-                                        <Button onClick={() => history.push("/management/«resource.name»s_overview")} variant="outlined" color="primary">«resource.name»s Overview</Button>
-    		                        </div>
-    		                    </div>
-    		                </AccordionDetails>
-    		            </Accordion>	    		
-    		    	«ENDFOR»
-		    		«FOR customer : definedCustomerTypes»
-	    		    	<Accordion>
-			                <AccordionSummary
-			                expandIcon={<ExpandMore/>}
-			                >
-			                    <Typography>«customer.name»s</Typography>
-			                </AccordionSummary>
-			                <AccordionDetails>
-			                    <div style={{display: "flex", flexDirection: "column"}}>
-			                        <Typography>
-			                            Resource description goes here, manage «customer.name»s below:
-			                        </Typography>
-			                        <div style={{paddingTop: "20px", display: "flex"}}>
-			                            <Button onClick={() => history.push("/management/«customer.name»_create")} variant="outlined" color="primary">Create «customer.name»</Button>
-                                        <div style={{paddingRight: "10px"}}></div>
-                                        <Button onClick={() => history.push("/management/«customer.name»s_overview")} variant="outlined" color="primary">«customer.name»s Overview</Button>
-			                        </div>
-			                    </div>
-			                </AccordionDetails>
-			            </Accordion>	
-    		    	«ENDFOR»
-    		    	«FOR schedule : definedScheduleTypes»
-	    		    	<Accordion>
-			                <AccordionSummary
-			                expandIcon={<ExpandMore/>}
-			                >
-			                    <Typography>«schedule.name»s</Typography>
-			                </AccordionSummary>
-			                <AccordionDetails>
-			                    <div style={{display: "flex", flexDirection: "column"}}>
-			                        <Typography>
-			                            Resource description goes here, manage «schedule.name»s below:
-			                        </Typography>
-			                        <div style={{paddingTop: "20px", display: "flex"}}>
-			                            <Button onClick={() => history.push("/management/«schedule.name»_create")} variant="outlined" color="primary">Create «schedule.name»</Button>
-                                        <div style={{paddingRight: "10px"}}></div>
-                                        <Button onClick={() => history.push("/management/«schedule.name»s_overview")} variant="outlined" color="primary">«schedule.name»s Overview</Button>
-			                        </div>
-			                    </div>
-			                </AccordionDetails>
-			            </Accordion>	
-    		    	«ENDFOR»
+		        
+		           «FOR dec : managementDeclarations»
+		            «dec.generateManagementOverviewJSX»
+		         «ENDFOR»
 		        </div>
 		    }
 		
@@ -164,6 +83,32 @@ class ManagementPagesGenerator {
 		export default ResourceOverviewPage;
 		''')
 	}
+	
+	
+	private def String generateManagementOverviewJSX(Declaration decleration) {
+	'''
+	<Accordion>
+            <AccordionSummary
+            expandIcon={<ExpandMore/>}
+            >
+                <Typography>«decleration.name»s</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    <Typography>
+                        Resource description goes here, manage «decleration.name»s below:
+                    </Typography>
+                    <div style={{paddingTop: "20px", display: "flex"}}>
+                        <Button onClick={() => history.push("/management/«decleration.name»_create")} variant="outlined" color="primary">Create «decleration.name»</Button>
+                        <div style={{paddingRight: "10px"}}></div>
+                        <Button onClick={() => history.push("/management/«decleration.name»s_overview")} variant="outlined" color="primary">«decleration.name»s Overview</Button>
+                    </div>
+                </div>
+            </AccordionDetails>
+        </Accordion>'''
+	}
+	
+	
 	
 	private def generateResourceManagementPages(Declaration declaration) {
 		
@@ -243,16 +188,7 @@ class ManagementPagesGenerator {
 		                                            <TableHead>
 		                                            <TableRow>
 		                                            	«FOR mem: declaration.members»
-		                                            		«IF (mem instanceof Attribute)»
-			                                            		«IF (mem.type.value == 0 || mem.type.value == 3)»
-			                                            		<TableCell align="right">«mem.name»</TableCell>
-			                                            		«ELSE»
-			                                            		<TableCell>«mem.name»</TableCell>
-			                                            		«ENDIF»
-		                                            		«ENDIF»
-		                                            		«IF (mem instanceof Relation)»
-		                                            		<TableCell>«mem.name»</TableCell>
-		                                            		«ENDIF»
+		                                            		«mem.generateTableHead»
 		                                            	«ENDFOR»
 		                                            	<TableCell></TableCell>
 		                                            	<TableCell></TableCell>
@@ -262,18 +198,8 @@ class ManagementPagesGenerator {
 		                                            {«declaration.name»Result.map((row) => (
 		                                                <TableRow key={row.id}>
 		                                                	«FOR mem: declaration.members»
-		                                                		«IF (mem instanceof Attribute)»
-		                                                			«IF (mem.type.value == 0 || mem.type.value == 3)»
-				                                            		<TableCell align="right">{row.«mem.name»«determineJoin(mem)»}</TableCell>
-				                                            		«ELSEIF (mem.type.value == 2)»
-				                                            		<TableCell>{row.«mem.name» ? row.«mem.name».toString() : "null"}</TableCell>
-				                                            		«ELSE»
-				                                            		<TableCell>{row.«mem.name»«determineJoin(mem)»}</TableCell>
-				                                            		«ENDIF»
-		                                                		«ENDIF»
-		                                                		«IF (mem instanceof Relation)»
-	                                                			<TableCell>{row.«mem.name».toString()}</TableCell>
-		                                                		«ENDIF»
+		                                                		«mem.generateTableRow»
+		                                                		
 		                                                	«ENDFOR»
 		                                                    <TableCell>
 		                                                    	<Button color="primary" variant="outlined" onClick={() => history.push(`/management/«declaration.name»_update/${row.id}`)}>Edit</Button>
@@ -314,19 +240,7 @@ class ManagementPagesGenerator {
 		''')
 	}
 	
-	private def determineJoin(Attribute attribute) {
-		return attribute.array ? ".join(\", \")" : ""
-	}
-	
-	private def declarationType(Declaration declaration) {
-		switch declaration {
-			Customer: "customers"
-			org.xtext.example.mydsl.bookingDSL.Resource: "resources"
-			Entity: "entities"
-			Schedule: "schedules"
-			Booking: "bookings"
-		}
-	}
+
 	
 	private def generateUpdatePage(String root, Declaration declaration) {
 		this.fsa.generateFile('''«root»/Update«declaration.name»Page.tsx''', '''
@@ -341,9 +255,7 @@ class ManagementPagesGenerator {
 		import { Update«declaration.name»RequestModel } from "../../../api/requestModels/Update«declaration.name»RequestModel"
 		import { «declaration.name» } from "../../../api/models/«this.declarationType(declaration)»/«declaration.name»";
 		«FOR mem: declaration.members»
-			«IF (mem instanceof Relation)»
-			import {«mem.relationType.name»} from "../../../api/models/«mem.relationType.declarationType»/«mem.relationType.name»"
-			«ENDIF»
+			«mem.UpdatePageImport»
 		«ENDFOR»
 		
 		const Update«declaration.name»Page = () => {
@@ -357,32 +269,8 @@ class ManagementPagesGenerator {
 			const [success, setSuccess] = useState(false)
 		
 			«FOR mem : declaration.members»
-				«IF (mem instanceof Attribute)»
-					«IF mem.isArray»
-						«IF mem.type.value == 0 || mem.type.value == 3»
-						const [«mem.name», set«mem.name»] = useState<number[]>([]);
-						«ELSEIF mem.type.value == 2»
-						const [«mem.name», set«mem.name»] = useState<boolean[]>([])
-						«ELSE»
-						const [«mem.name», set«mem.name»] = useState<string[]>([])
-						«ENDIF»
-					«ELSE»
-						«IF mem.type.value == 0 || mem.type.value == 3»
-						const [«mem.name», set«mem.name»] = useState<number>();
-						«ELSEIF mem.type.value == 2»
-						const [«mem.name», set«mem.name»] = useState<boolean>(false)
-						«ELSE»
-						const [«mem.name», set«mem.name»] = useState<string>("")
-						«ENDIF»
-					«ENDIF»
-				«ENDIF»
-				«IF (mem instanceof Relation)»
-					«IF (mem.plurality == "many")»
-						const [«mem.name», set«mem.name»] = useState<«mem.relationType.name»[]>([])
-					«ELSE»
-						const [«mem.name», set«mem.name»] = useState<«mem.relationType.name»>()
-					«ENDIF»
-				«ENDIF»
+			«mem.UpdatePageUseStateHook»
+				
 			«ENDFOR»
 			«FOR mem : declaration.members»
 			«IF (mem instanceof Relation)»
@@ -402,12 +290,7 @@ class ManagementPagesGenerator {
 	            if(result.isSuccess) {
 	                setLoadResult(result.data)
 	                «FOR mem : declaration.members»
-		                «IF (mem instanceof Attribute)»
-		                set«mem.name»(result.data.«mem.name»)
-		                «ENDIF»
-		                «IF (mem instanceof Relation)»
-		                set«mem.name»(result.data.«mem.name»)
-		                «ENDIF»
+	                	set«mem.name»(result.data.«mem.name»)
 	                «ENDFOR»
 	                «IF (declaration.hasRelation)»
 	                downloadRelationData()
@@ -453,63 +336,8 @@ class ManagementPagesGenerator {
 		        return (
 		            <>
 		                «FOR mem : declaration.members»
-	        				«IF (mem instanceof Attribute)»
-	        					«IF mem.isArray»
-	        						«IF mem.type.value == 0 || mem.type.value == 3»
-	        						<ChipInput label={"«mem.name»"} variant="outlined" value={«mem.name»} onAdd={(chip) => {
-			                            if(isNumber(chip)) {
-			                                set«mem.name»([...«mem.name», parseInt(chip)])
-			                            }
-			                        }}
-			                        onDelete={(chip, index) => {
-			                            «mem.name».splice(index, 1)
-			                            set«mem.name»([...«mem.name»]);
-			                        }}
-			                        />
-			                        <div style={{padding:"10px"}}/>
-	        						«ELSEIF mem.type.value == 1»
-	        						<ChipInput label={"«mem.name»"} variant="outlined" onChange={(chips) => set«mem.name»(chips)}/>
-	        						<div style={{padding:"10px"}}/>
-	        						«ENDIF»
-	        					«ELSE»
-	        						«IF mem.type.value == 0 || mem.type.value == 3»
-	            					<TextField onChange={(e) => set«mem.name»(parseInt(e.target.value))} value={«mem.name»} type="number" label="«mem.name»" size="small" variant="outlined"></TextField>
-	            					<div style={{padding:"10px"}}/>
-	            					«ELSEIF mem.type.value == 2»
-	            					<div style={{display: "flex", alignItems: "center"}}>
-			                            <Checkbox onChange={e => set«mem.name»(e.target.checked)} value={«mem.name»}/> «mem.name»
-			                        </div>
-			                        <div style={{padding:"10px"}}/>
-	            					«ELSE»
-	            					<TextField onChange={(e) => set«mem.name»(e.target.value)} value={«mem.name»} type="text" label="«mem.name»" size="small" variant="outlined"></TextField>                 					
-	            					<div style={{padding:"10px"}}/>
-	            					«ENDIF»
-	        					«ENDIF»
-	        				«ENDIF»
-	        				«IF (mem instanceof Relation)»
-	        					«IF (mem.plurality == "many")»
-	        					<ChipList selectedItems={«mem.name».map(e => e.id)} onRemoveItem={(item) => update«mem.name»(«mem.name».filter(e => e.id === item)[0], false)}></ChipList>
-	        					<FormControl variant="outlined">
-	        					<InputLabel id="demo-simple-select-outlined-label">«mem.name»</InputLabel>
-	        					<Select variant="outlined" value={''} label={"«mem.name»"} onChange={(value) => update«mem.name»(«mem.name»Result.filter(e => e.id === value.target.value as string)[0], true)}>
-									{«mem.name»Result.filter(f => !«mem.name».map(e => e.id).includes(f.id)).map((ele, key) => {
-										return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(mem)»}</MenuItem>
-									})}
-								</Select>
-								</FormControl>
-								<div style={{padding:"10px"}}/>
-	        					«ELSE»
-	        					<FormControl variant="outlined">
-	        					<InputLabel id="demo-simple-select-outlined-label">«mem.name»</InputLabel>
-	        					<Select variant="outlined" label={"«mem.name»"} value={«mem.name» ? «mem.name».id : undefined} onChange={(event) => set«mem.name»(«mem.name»Result.filter(e => e.id === event.target.value as string)[0])}>
-									{«mem.name»Result.map((ele, key) => {
-										return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(mem)»}</MenuItem>
-									})}
-								</Select>
-								</FormControl>
-								<div style={{padding:"10px"}}/>
-	        					«ENDIF»
-	        				«ENDIF»
+	        				«mem.generateUpdateManagentJSX»
+	        				
 	        			«ENDFOR»
 	                    <div style={{padding:"10px"}}/>
 	                    {submitting
@@ -579,32 +407,7 @@ class ManagementPagesGenerator {
 			const [success, setSuccess] = useState(false)
 			
 			«FOR mem : declaration.members»
-				«IF (mem instanceof Attribute)»
-					«IF mem.isArray»
-						«IF mem.type.value == 0 || mem.type.value == 3»
-						const [«mem.name», set«mem.name»] = useState<number[]>([]);
-						«ELSEIF mem.type.value == 2»
-						const [«mem.name», set«mem.name»] = useState<boolean[]>([])
-						«ELSE»
-						const [«mem.name», set«mem.name»] = useState<string[]>([])
-						«ENDIF»
-					«ELSE»
-						«IF mem.type.value == 0 || mem.type.value == 3»
-						const [«mem.name», set«mem.name»] = useState<number>();
-						«ELSEIF mem.type.value == 2»
-						const [«mem.name», set«mem.name»] = useState<boolean>(false)
-						«ELSE»
-						const [«mem.name», set«mem.name»] = useState<string>("")
-						«ENDIF»
-					«ENDIF»
-				«ENDIF»
-				«IF (mem instanceof Relation)»
-					«IF (mem.plurality == "many")»
-						const [«mem.name», set«mem.name»] = useState<«mem.relationType.name»[]>([])
-					«ELSE»
-						const [«mem.name», set«mem.name»] = useState<«mem.relationType.name»>()
-					«ENDIF»
-				«ENDIF»
+				«mem.UpdatePageUseStateHook»
 			«ENDFOR»
 			«FOR mem : declaration.members»
 			«IF (mem instanceof Relation)»
@@ -625,26 +428,7 @@ class ManagementPagesGenerator {
 		
 		        if(result.isSuccess) {
 		        	«FOR mem : declaration.members»
-    					«IF (mem instanceof Attribute)»
-    						«IF mem.isArray»
-    							set«mem.name»([])
-    						«ELSE»
-    							«IF mem.type.value == 0 || mem.type.value == 3»
-    							set«mem.name»(undefined)
-    							«ELSEIF mem.type.value == 2»
-    							set«mem.name»(false)
-    							«ELSE»
-    							set«mem.name»("")
-    							«ENDIF»
-    						«ENDIF»
-    					«ENDIF»
-    					«IF (mem instanceof Relation)»
-    						«IF (mem.plurality == "many")»
-    							set«mem.name»([])
-    						«ELSE»
-    							set«mem.name»(undefined)
-    						«ENDIF»
-    					«ENDIF»
+		        		«mem.generateSubmitResult»
     				«ENDFOR»
 		        	
 					setSuccess(true);
@@ -668,63 +452,9 @@ class ManagementPagesGenerator {
 		        return (
 		            <>
 		                «FOR mem : declaration.members»
-	        				«IF (mem instanceof Attribute)»
-	        					«IF mem.isArray»
-	        						«IF mem.type.value == 0 || mem.type.value == 3»
-	        						<ChipInput label={"«mem.name»"} variant="outlined" value={«mem.name»} onAdd={(chip) => {
-			                            if(isNumber(chip)) {
-			                                set«mem.name»([...«mem.name», parseInt(chip)])
-			                            }
-			                        }}
-			                        onDelete={(chip, index) => {
-			                            «mem.name».splice(index, 1)
-			                            set«mem.name»([...«mem.name»]);
-			                        }}
-			                        />
-			                        <div style={{padding:"10px"}}/>
-	        						«ELSEIF mem.type.value == 1»
-	        						<ChipInput label={"«mem.name»"} variant="outlined" onChange={(chips) => set«mem.name»(chips)}/>
-	        						<div style={{padding:"10px"}}/>
-	        						«ENDIF»
-	        					«ELSE»
-	        						«IF mem.type.value == 0 || mem.type.value == 3»
-	            					<TextField onChange={(e) => set«mem.name»(parseInt(e.target.value))} value={«mem.name»} type="number" label="«mem.name»" size="small" variant="outlined"></TextField>
-	            					<div style={{padding:"10px"}}/>
-	            					«ELSEIF mem.type.value == 2»
-	            					<div style={{display: "flex", alignItems: "center"}}>
-			                            <Checkbox onChange={e => set«mem.name»(e.target.checked)} value={«mem.name»}/> «mem.name»
-			                        </div>
-			                        <div style={{padding:"10px"}}/>
-	            					«ELSE»
-	            					<TextField onChange={(e) => set«mem.name»(e.target.value)} value={«mem.name»} type="text" label="«mem.name»" size="small" variant="outlined"></TextField>                 					
-	            					<div style={{padding:"10px"}}/>
-	            					«ENDIF»
-	        					«ENDIF»
-	        				«ENDIF»
-	        				«IF (mem instanceof Relation)»
-	        					«IF (mem.plurality == "many")»
-	        					<ChipList selectedItems={«mem.name».map(e => e.id)} onRemoveItem={(item) => update«mem.name»(«mem.name».filter(e => e.id === item)[0], false)}></ChipList>
-	        					<FormControl variant="outlined">
-	        					<InputLabel id="demo-simple-select-outlined-label">«mem.name»</InputLabel>
-	        					<Select variant="outlined" value={''} label={"«mem.name»"} onChange={(value) => update«mem.name»(«mem.name»Result.filter(e => e.id === value.target.value as string)[0], true)}>
-									{«mem.name»Result.filter(f => !«mem.name».map(e => e.id).includes(f.id)).map((ele, key) => {
-										return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(mem)»}</MenuItem>
-									})}
-								</Select>
-								</FormControl>
-								<div style={{padding:"10px"}}/>
-	        					«ELSE»
-	        					<FormControl variant="outlined">
-	        					<InputLabel id="demo-simple-select-outlined-label">«mem.name»</InputLabel>
-	        					<Select variant="outlined" label={"«mem.name»"} value={«mem.name» ? «mem.name».id : undefined} onChange={(event) => set«mem.name»(«mem.name»Result.filter(e => e.id === event.target.value as string)[0])}>
-									{«mem.name»Result.map((ele, key) => {
-										return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(mem)»}</MenuItem>
-									})}
-								</Select>
-								</FormControl>
-								<div style={{padding:"10px"}}/>
-	        					«ENDIF»
-	        				«ENDIF»
+		                «mem.generateCreatePageJSX»
+	        			
+	        			
 	        			«ENDFOR»
 	                    <div style={{padding:"10px"}}/>
 	                    {submitting
@@ -768,17 +498,80 @@ class ManagementPagesGenerator {
 		''')
 	}
 	
+	def dispatch String generateCreatePageJSX(Attribute att) {
+		'''
+		«IF att.isArray»
+			«IF att.type.value == 0 || att.type.value == 3»
+			<ChipInput label={"«att.name»"} variant="outlined" value={«att.name»} onAdd={(chip) => {
+                if(isNumber(chip)) {
+                    set«att.name»([...«att.name», parseInt(chip)])
+                }
+            }}
+            onDelete={(chip, index) => {
+                «att.name».splice(index, 1)
+                set«att.name»([...«att.name»]);
+            }}
+            />
+            <div style={{padding:"10px"}}/>
+			«ELSEIF att.type.value == 1»
+			<ChipInput label={"«att.name»"} variant="outlined" onChange={(chips) => set«att.name»(chips)}/>
+			<div style={{padding:"10px"}}/>
+			«ENDIF»
+		«ELSE»
+			«IF att.type.value == 0 || att.type.value == 3»
+			<TextField onChange={(e) => set«att.name»(parseInt(e.target.value))} value={«att.name»} type="number" label="«att.name»" size="small" variant="outlined"></TextField>
+			<div style={{padding:"10px"}}/>
+			«ELSEIF att.type.value == 2»
+			<div style={{display: "flex", alignItems: "center"}}>
+                <Checkbox onChange={e => set«att.name»(e.target.checked)} value={«att.name»}/> «att.name»
+            </div>
+            <div style={{padding:"10px"}}/>
+			«ELSE»
+			<TextField onChange={(e) => set«att.name»(e.target.value)} value={«att.name»} type="text" label="«att.name»" size="small" variant="outlined"></TextField>                 					
+			<div style={{padding:"10px"}}/>
+			«ENDIF»
+		«ENDIF»
+			        			
+		'''
+	}
+	
+	def dispatch String generateCreatePageJSX(Relation rel) {
+			
+		}
+	
+	def dispatch String generateSubmitResult(Attribute att) {
+		''' 
+		«IF att.isArray»
+			set«att.name»([])
+		«ELSE»
+			«IF att.type.value == 0 || att.type.value == 3»
+			set«att.name»(undefined)
+			«ELSEIF att.type.value == 2»
+			set«att.name»(false)
+			«ELSE»
+			set«att.name»("")
+			«ENDIF»
+		«ENDIF»
+		    				
+		 '''
+	}
+	
+	def dispatch String generateSubmitResult(Relation rel) {
+		'''
+		«IF (rel.plurality == "many")»
+			set«rel.name»([])
+		«ELSE»
+			set«rel.name»(undefined)
+		«ENDIF»
+		'''
+	}
+	
 	private def generateRequestMapping(Declaration declaration) {
 		
 		var members = declaration.members;
 		var mappingList = new ArrayList<String>();
 		for(mem: members) {
-			if(mem instanceof Attribute) {
-				mappingList.add(mem.name + ": " + mem.name)	
-			}
-			if(mem instanceof Relation) {
-				mappingList.add(mem.name + ": " + mem.name)
-			}
+			mappingList.add(mem.name + ": " + mem.name)	
 		}
 		return mappingList.join(", ");
 	}
@@ -863,4 +656,175 @@ class ManagementPagesGenerator {
 		}
 		return "id";
 	}	
+	
+	
+	
+	private def dispatch String UpdatePageImport(Relation rel) {
+		'''			import {«rel.relationType.name»} from "../../../api/models/«rel.relationType.declarationType»/«rel.relationType.name»"'''
+	}
+	
+	private def dispatch String UpdatePageImport(Attribute rel) {
+		
+	}
+	
+	
+	private def dispatch String generateTableHead(Attribute att) {
+		'''
+		«IF (att.type.value == 0 || att.type.value == 3)»
+		<TableCell align="right">«att.name»</TableCell>
+		«ELSE»
+		<TableCell>«att.name»</TableCell>
+		«ENDIF»
+		'''
+	}
+	
+	private def dispatch String generateTableHead(Relation rel) {
+		'''<TableCell>«rel.name»</TableCell>'''
+	}
+	
+
+	
+	
+	
+	private def dispatch String generateTableRow(Attribute att) {
+		''' 
+		«IF (att.type.value == 0 || att.type.value == 3)»
+		<TableCell align="right">{row.«att.name»«determineJoin(att)»}</TableCell>
+		«ELSEIF (att.type.value == 2)»
+		<TableCell>{row.«att.name» ? row.«att.name».toString() : "null"}</TableCell>
+		«ELSE»
+		<TableCell>{row.«att.name»«determineJoin(att)»}</TableCell>
+		«ENDIF»
+		'''
+	}
+	
+	private def dispatch String generateTableRow(Relation rel) {
+		'''<TableCell>{row.«rel.name».toString()}</TableCell>'''
+	}
+	
+		
+	private def determineJoin(Attribute attribute) {
+		return attribute.array ? ".join(\", \")" : ""
+	}
+	
+	private def declarationType(Declaration declaration) {
+		switch declaration {
+			Customer: "customers"
+			org.xtext.example.mydsl.bookingDSL.Resource: "resources"
+			Entity: "entities"
+			Schedule: "schedules"
+			Booking: "bookings"
+		}
+	}
+	
+	
+	
+	
+
+	
+	private def getValue(int type , boolean isArray) {
+		if(isArray) {
+			switch type {
+					case 0: 'useState<number[]>([])'
+					case 1: 'useState<string[]>([])'
+					case 2: 'useState<boolean[]>([])'
+					case 3: 'useState<number[]>([])'
+					
+				}
+		}else {
+			
+			switch type {
+					case 0: 'useState<number>()'
+					case 1: 'useState<string>()'
+					case 2: 'useState<boolean>()'
+					case 3: 'useState<number>()'
+					
+				}
+			}	
+		}
+	
+	
+	private def dispatch String UpdatePageUseStateHook(Attribute att) {
+		'''
+		const [«att.name», set«att.name»] = «getValue(att.type.value , att.isArray )»
+		'''
+	}
+	private def dispatch String UpdatePageUseStateHook(Relation rel) {
+		'''
+		«IF (rel.plurality == "many")»
+			const [«rel.name», set«rel.name»] = useState<«rel.relationType.name»[]>([])
+		«ELSE»
+			const [«rel.name», set«rel.name»] = useState<«rel.relationType.name»>()
+		«ENDIF»
+		'''
+	}
+	
+	private def dispatch String generateUpdateManagentJSX(Attribute attribute) {
+		'''
+		«IF attribute.isArray»
+			«IF attribute.type.value == 0 || attribute.type.value == 3»
+			<ChipInput label={"«attribute.name»"} variant="outlined" value={«attribute.name»} onAdd={(chip) => {
+                if(isNumber(chip)) {
+                    set«attribute.name»([...«attribute.name», parseInt(chip)])
+                }
+            }}
+            onDelete={(chip, index) => {
+                «attribute.name».splice(index, 1)
+                set«attribute.name»([...«attribute.name»]);
+            }}
+            />
+            <div style={{padding:"10px"}}/>
+			«ELSEIF attribute.type.value == 1»
+			<ChipInput label={"«attribute.name»"} variant="outlined" onChange={(chips) => set«attribute.name»(chips)}/>
+			<div style={{padding:"10px"}}/>
+			«ENDIF»
+		«ELSE»
+			«IF attribute.type.value == 0 || attribute.type.value == 3»
+			<TextField onChange={(e) => set«attribute.name»(parseInt(e.target.value))} value={«attribute.name»} type="number" label="«attribute.name»" size="small" variant="outlined"></TextField>
+			<div style={{padding:"10px"}}/>
+			«ELSEIF attribute.type.value == 2»
+			<div style={{display: "flex", alignItems: "center"}}>
+                <Checkbox onChange={e => set«attribute.name»(e.target.checked)} value={«attribute.name»}/> «attribute.name»
+            </div>
+            <div style={{padding:"10px"}}/>
+			«ELSE»
+			<TextField onChange={(e) => set«attribute.name»(e.target.value)} value={«attribute.name»} type="text" label="«attribute.name»" size="small" variant="outlined"></TextField>                 					
+			<div style={{padding:"10px"}}/>
+			«ENDIF»
+		«ENDIF»
+			        			
+		'''
+	}
+	
+	private def dispatch String generateUpdateManagentJSX(Relation releation) {
+		'''
+		«IF (releation.plurality == "many")»
+		<ChipList selectedItems={«releation.name».map(e => e.id)} onRemoveItem={(item) => update«releation.name»(«releation.name».filter(e => e.id === item)[0], false)}></ChipList>
+		<FormControl variant="outlined">
+		<InputLabel id="demo-simple-select-outlined-label">«releation.name»</InputLabel>
+		<Select variant="outlined" value={''} label={"«releation.name»"} onChange={(value) => update«releation.name»(«releation.name»Result.filter(e => e.id === value.target.value as string)[0], true)}>
+			{«releation.name»Result.filter(f => !«releation.name».map(e => e.id).includes(f.id)).map((ele, key) => {
+				return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(releation)»}</MenuItem>
+			})}
+		</Select>
+		</FormControl>
+		<div style={{padding:"10px"}}/>
+		«ELSE»
+		<FormControl variant="outlined">
+		<InputLabel id="demo-simple-select-outlined-label">«releation.name»</InputLabel>
+		<Select variant="outlined" label={"«releation.name»"} value={«releation.name» ? «releation.name».id : undefined} onChange={(event) => set«releation.name»(«releation.name»Result.filter(e => e.id === event.target.value as string)[0])}>
+			{«releation.name»Result.map((ele, key) => {
+				return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(releation)»}</MenuItem>
+			})}
+		</Select>
+		</FormControl>
+		<div style={{padding:"10px"}}/>
+		«ENDIF»
+		'''
+	}
+	
+	
+	
+	
+	
 }

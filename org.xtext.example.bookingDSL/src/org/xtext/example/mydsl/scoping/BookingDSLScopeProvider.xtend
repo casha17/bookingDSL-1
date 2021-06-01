@@ -37,14 +37,13 @@ class BookingDSLScopeProvider  extends AbstractBookingDSLScopeProvider  {
 	}
 	
 	def Iterable<? extends EObject> allAttributes(Customer entity) {
-		
 		val candidates = new ArrayList<Attribute>
 		val seen = new HashSet<Customer>
 		var e = entity
 		while (e!==null) {
 			if(seen.contains(e)) return Collections.EMPTY_LIST
 			seen.add(e)
-			candidates.addAll(e.members.filter(Attribute))
+			candidates.addAll(AttributeNumbers(e.members.filter(Attribute)))
 			e = e.superType
 		}
 		candidates
@@ -62,6 +61,10 @@ class BookingDSLScopeProvider  extends AbstractBookingDSLScopeProvider  {
 			e = e.superType
 		}
 		candidates
+	}
+	
+	def Iterable<Attribute> AttributeNumbers(Iterable<Attribute> attributes) {
+		return attributes
 	}
 	
 }

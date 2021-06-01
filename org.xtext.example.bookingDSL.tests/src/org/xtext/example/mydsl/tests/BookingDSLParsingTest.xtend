@@ -3,15 +3,132 @@
  */
 package org.xtext.example.mydsl.tests
 
-import org.eclipse.xtext.testing.InjectWith
-import org.eclipse.xtext.testing.extensions.InjectionExtension
-import org.eclipse.xtext.testing.util.ParseHelper
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.^extension.ExtendWith
+import com.google.inject.Inject
 
-@ExtendWith(InjectionExtension)
+import com.google.inject.Inject
+
+import org.eclipse.xtext.testing.InjectWith
+import org.eclipse.xtext.testing.XtextRunner
+import org.eclipse.xtext.testing.util.ParseHelper
+import org.eclipse.xtext.testing.validation.ValidationTestHelper
+import org.junit.Test
+import org.junit.runner.RunWith
+
+import com.google.inject.Inject
+import static extension org.junit.Assert.assertNotNull
+import org.eclipse.xtext.testing.validation.ValidationTestHelper
+import org.xtext.example.mydsl.bookingDSL.BookingDSLPackage
+import org.xtext.example.mydsl.validation.BookingDSLValidator
+import javax.xml.validation.ValidatorHandler
+import static org.eclipse.xtext.xbase.validation.IssueCodes.*
+import static org.eclipse.xtext.xtype.XtypePackage.Literals.*
+
+@RunWith(XtextRunner)
 @InjectWith(BookingDSLInjectorProvider)
 class BookingDSLParsingTest {
+	
+	@Inject extension ParseHelper<org.xtext.example.mydsl.bookingDSL.System> parseHelper;
+
+	@Inject extension ValidationTestHelper
+	
+	@Test
+	def void testBookingSystemMustStartWithUppercaseCharacter() {
+	    
+	    parseHelper.parse(getSystemWithSmallSystem).assertError(BookingDSLPackage::eINSTANCE.system , null , 'System has to start with an uppercase');
+		
+		}
+
+	@Test
+	def void testDeclerationMustStartWithUppercase() {
+		parseHelper.parse(systemWithSmallDeclaration).assertError(BookingDSLPackage::eINSTANCE.declaration , null , 'Declarations has to start with an uppercase');
+		
+	}
+	
+	@Test
+	def void testcheckNoCyclic() {
+		parseHelper.parse(systemtemWithCyclic).assertError(BookingDSLPackage::eINSTANCE.baseDeclaration , null , 'Declaration cannot have cyclic dependencies' , 'Declaration cannot have cyclic dependencies');
+		
+	}
+	
+	@Test
+	def void testCheckIfBookingHasCorrectRelations() {
+				parseHelper.parse(systemWithBooking).assertError(BookingDSLPackage::eINSTANCE.baseDeclaration , null , 'Booking must have a has one relation to a resource, customer and schedule');
+		
+	}
+	
+	def String getSystemWithBooking() {
+		'''
+		system Cinema {
+		external function1(test)
+		
+		customer Client {
+			name: string
+			age: int
+		} 
+		
+		customer Admin extends Client {
+			has one cli : Client
+			constraint (age <= 10)
+		}
+		
+		
+		
+		entity CinemaHall {
+			name: string
+			has one cli:Client
+		}
+		
+		resource Seat {
+			name: string
+			weight: int
+			has many nightPlans : NightPlan
+		}
+		
+		booking CinemaBooking {
+			name: string
+			has one client : Client
+			has one seat : Seat
+		}
+		
+		schedule NightPlan {
+			name:string
+		}
+		}
+		'''
+	}
+	
+	def String getSystemtemWithCyclic() {
+		'''
+		system Cinema {
+			customer Client extends Admin {
+				name: string
+				}
+			customer Admin extends Client {
+				name: string 
+				}
+				
+		}
+		'''
+	}
+	
+	def String getSystemWithSmallDeclaration() {
+		'''
+		system Cinema {
+		customer client {
+			name: string
+			}
+		
+		}
+		'''
+	}
+	
+	def String getSystemWithSmallSystem() {
+		'''
+		system cinema {
+		
+		
+		}
+		'''
+	}
 	
 }
